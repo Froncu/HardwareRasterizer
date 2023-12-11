@@ -4,7 +4,18 @@
 #pragma region Constructors/Destructors
 Renderer::Renderer(SDL_Window* pWindow) :
 	m_pWindow{ pWindow },
-	m_IsInitialized{ SUCCEEDED(InitializeDirectX()) }
+	m_IsInitialized{ SUCCEEDED(InitializeDirectX()) },
+
+	m_Mesh
+	{
+		m_pDevice,
+		{
+			{ Vector3(0.0f, 0.5f, 0.5f), RED },
+			{ Vector3(0.5f, -0.5f, 0.5f), BLUE },
+			{ Vector3(-0.5f, -0.5f, 0.5f), GREEN }
+		},
+		{ 0, 1, 2 }
+	}
 {
 	if (!m_IsInitialized)
 		std::cout << "DirectX initialization failed!\n";
@@ -45,7 +56,7 @@ void Renderer::Render() const
 
 	ClearBuffers();
 
-	//
+	m_Mesh.Render(m_pDeviceContext);
 
 	m_pSwapChain->Present(0, 0);
 }
@@ -198,8 +209,8 @@ void Renderer::BindAsActiveBuffers(ID3D11DeviceContext* const pDeviceContext, ID
 void Renderer::SetViewPort(ID3D11DeviceContext* const pDeviceContext)
 {
 	D3D11_VIEWPORT viewport{};
-	viewport.Width = WINDOW_WIDTH;
-	viewport.Height = WINDOW_HEIGHT;
+	viewport.Width = static_cast<FLOAT>(WINDOW_WIDTH);
+	viewport.Height = static_cast<FLOAT>(WINDOW_HEIGHT);
 	viewport.TopLeftX = 0.0f;
 	viewport.TopLeftY = 0.0f;
 	viewport.MinDepth = 0.0f;

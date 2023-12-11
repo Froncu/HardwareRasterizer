@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ColorRGB.h"
+#include "Mesh.h"
 
 class Timer;
 struct SDL_Window;
@@ -9,13 +10,14 @@ struct SDL_Surface;
 class Renderer final
 {
 public:
-	Renderer(SDL_Window* pWindow);
 	~Renderer();
 
 	Renderer(const Renderer&) = delete;
 	Renderer(Renderer&&) noexcept = delete;
 	Renderer& operator=(const Renderer&) = delete;
 	Renderer& operator=(Renderer&&) noexcept = delete;
+
+	Renderer(SDL_Window* pWindow);
 
 	void Update(const Timer& timer);
 	void Render() const;
@@ -44,4 +46,6 @@ private:
 	ID3D11DepthStencilView* m_pDepthStencilView;
 	ID3D11Resource* m_pRenderTargetBuffer;
 	ID3D11RenderTargetView* m_pRenderTargetView;
+
+	Mesh m_Mesh;
 };

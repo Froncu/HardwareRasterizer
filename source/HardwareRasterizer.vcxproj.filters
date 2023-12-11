@@ -32,6 +32,15 @@
     <Filter Include="Miscellaneous\ColorRGB">
       <UniqueIdentifier>{719984a1-0596-454b-ba53-259f980a2012}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Miscellaneous\Effect">
+      <UniqueIdentifier>{eacfb646-807d-4196-85e7-e3087cbf3618}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects">
+      <UniqueIdentifier>{654e9fb6-7789-491b-bc05-2bbe427caf8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Mesh">
+      <UniqueIdentifier>{95420dff-6c5a-4155-8065-5de101a141c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -62,6 +71,15 @@
     <ClInclude Include="Constants.hpp">
       <Filter>Mathematics</Filter>
     </ClInclude>
+    <ClInclude Include="Effect.h">
+      <Filter>Miscellaneous\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.hpp">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Objects\Mesh</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -86,6 +104,12 @@
     </ClCompile>
     <ClCompile Include="ColorRGB.cpp">
       <Filter>Miscellaneous\ColorRGB</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect.cpp">
+      <Filter>Miscellaneous\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Objects\Mesh</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
