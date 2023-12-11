@@ -1,59 +1,52 @@
 #pragma once
 
-namespace dae
+struct Vector2;
+struct Vector4;
+struct Vector3
 {
-	struct Vector2;
-	struct Vector4;
-	struct Vector3
-	{
-		float x{};
-		float y{};
-		float z{};
+public:
+	Vector3 operator*(float scalar) const;
+	Vector3 operator/(float scalar) const;
+	Vector3 operator+(const Vector3& vector) const;
+	Vector3 operator-(const Vector3& vector) const;
+	Vector3 operator-() const;
 
-		Vector3() = default;
-		Vector3(float _x, float _y, float _z);
-		Vector3(const Vector3& from, const Vector3& to);
-		Vector3(const Vector4& v);
+	Vector3& operator*=(float scalar);
+	Vector3& operator/=(float scalar);
+	Vector3& operator+=(const Vector3& vector);
+	Vector3& operator-=(const Vector3& vector);
 
-		float Magnitude() const;
-		float SqrMagnitude() const;
-		float Normalize();
-		Vector3 Normalized() const;
+	bool operator==(const Vector3& vector) const;
 
-		static float Dot(const Vector3& v1, const Vector3& v2);
-		static Vector3 Cross(const Vector3& v1, const Vector3& v2);
-		static Vector3 Project(const Vector3& v1, const Vector3& v2);
-		static Vector3 Reject(const Vector3& v1, const Vector3& v2);
-		static Vector3 Reflect(const Vector3& v1, const Vector3& v2);
+	float& operator[](int index);
+	float operator[](int index) const;
 
-		Vector4 ToPoint4() const;
-		Vector4 ToVector4() const;
+	static float Dot(const Vector3& vector1, const Vector3& vector2);
+	static Vector3 Cross(const Vector3& vector1, const Vector3& vector2);
+	static Vector3 Project(const Vector3& vector1, const Vector3& vector2);
+	static Vector3 Reject(const Vector3& vector1, const Vector3& vector2);
+	static Vector3 Reflect(const Vector3& vector1, const Vector3& vector2);
 
-		Vector2 GetXY() const;
+	float GetSquareMagnitude() const;
+	float GetMagnitude() const;
 
-		//Member Operators
-		Vector3 operator*(float scale) const;
-		Vector3 operator/(float scale) const;
-		Vector3 operator+(const Vector3& v) const;
-		Vector3 operator-(const Vector3& v) const;
-		Vector3 operator-() const;
-		//Vector3& operator-();
-		Vector3& operator+=(const Vector3& v);
-		Vector3& operator-=(const Vector3& v);
-		Vector3& operator/=(float scale);
-		Vector3& operator*=(float scale);
-		float& operator[](int index);
-		float operator[](int index) const;
+	Vector3 GetNormalized() const;
+	const Vector3& Normalize();
 
-		static const Vector3 UnitX;
-		static const Vector3 UnitY;
-		static const Vector3 UnitZ;
-		static const Vector3 Zero;
-	};
+	Vector2 GetVector2() const;
+	Vector4 GetVector4() const;
+	Vector4 GetPoint4() const;
 
-	//Global Operators
-	inline Vector3 operator*(float scale, const Vector3& v)
-	{
-		return { v.x * scale, v.y * scale, v.z * scale };
-	}
-}
+	float
+		x,
+		y,
+		z;
+};
+
+Vector3 operator*(float scalar, const Vector3& vector);
+
+static constexpr Vector3
+VECTOR3_UNIT_X{ 1.0f, 0.0f, 0.0f },
+VECTOR3_UNIT_Y{ 0.0f, 1.0f, 0.0f },
+VECTOR3_UNIT_Z{ 0.0f, 0.0f, 1.0f },
+VECTOR3_ZERO{ 0.0f, 0.0f, 0.0f };

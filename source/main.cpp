@@ -1,89 +1,73 @@
 #include "pch.h"
 
-#if defined(_DEBUG)
 #include "vld.h"
-#endif
-
-#undef main
 #include "Renderer.h"
 
-using namespace dae;
+#include <string>
 
-void ShutDown(SDL_Window* pWindow)
+int main([[maybe_unused]] int argc, [[maybe_unused]] char* args[])
 {
-	SDL_DestroyWindow(pWindow);
-	SDL_Quit();
-}
-
-int main(int argc, char* args[])
-{
-	//Unreferenced parameters
-	(void)argc;
-	(void)args;
-
-	//Create window + surfaces
 	SDL_Init(SDL_INIT_VIDEO);
 
-	const uint32_t width = 640;
-	const uint32_t height = 480;
+	const std::string windowTitle{ "Rasterizer - Fratczak Jakub (2DAE10)" };
 
 	SDL_Window* pWindow = SDL_CreateWindow(
-		"DirectX - ***Insert Name/Class***",
+		windowTitle.c_str(),
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
-		width, height, 0);
+		WINDOW_WIDTH, WINDOW_HEIGHT, NULL);
 
 	if (!pWindow)
 		return 1;
 
-	//Initialize "framework"
-	const auto pTimer = new Timer();
-	const auto pRenderer = new Renderer(pWindow);
+	SDL_SetRelativeMouseMode(SDL_bool(true));
 
-	//Start loop
-	pTimer->Start();
-	float printTimer = 0.f;
-	bool isLooping = true;
+	Renderer renderer{ pWindow };
+
+	std::cout << CONTROLS;
+
+	Timer timer{};
+	timer.Start();
+
+	bool isLooping{ true };
+	float printTimer{};
 	while (isLooping)
 	{
-		//--------- Get input events ---------
-		SDL_Event e;
-		while (SDL_PollEvent(&e))
+		SDL_Event event;
+		while (SDL_PollEvent(&event))
 		{
-			switch (e.type)
+			switch (event.type)
 			{
 			case SDL_QUIT:
 				isLooping = false;
 				break;
+
 			case SDL_KEYUP:
-				//Test for a key
-				//if (e.key.keysym.scancode == SDL_SCANCODE_X)
+				switch (event.key.keysym.scancode)
+				{
+				}
 				break;
-			default: ;
+
+			case SDL_MOUSEWHEEL:
+
+				break;
 			}
 		}
 
-		//--------- Update ---------
-		pRenderer->Update(pTimer);
+		renderer.Update(timer);
+		renderer.Render();
 
-		//--------- Render ---------
-		pRenderer->Render();
-
-		//--------- Timer ---------
-		pTimer->Update();
-		printTimer += pTimer->GetElapsed();
-		if (printTimer >= 1.f)
+		timer.Update();
+		printTimer += timer.GetElapsed();
+		if (printTimer >= 1.0f)
 		{
-			printTimer = 0.f;
-			std::cout << "dFPS: " << pTimer->GetdFPS() << std::endl;
+			printTimer = 0.0f;
+			SDL_SetWindowTitle(pWindow, (windowTitle + " - dFPS: " + std::to_string(timer.GetdFPS())).c_str());
 		}
 	}
-	pTimer->Stop();
+	timer.Stop();
 
-	//Shutdown "framework"
-	delete pRenderer;
-	delete pTimer;
-
-	ShutDown(pWindow);
+	SDL_DestroyWindow(pWindow);
+	SDL_Quit();
 	return 0;
 }

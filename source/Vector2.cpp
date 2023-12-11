@@ -1,117 +1,181 @@
 #include "pch.h"
-
 #include "Vector2.h"
-#include <cassert>
 
-namespace dae {
-	const Vector2 Vector2::UnitX = Vector2{ 1, 0 };
-	const Vector2 Vector2::UnitY = Vector2{ 0, 1 };
-	const Vector2 Vector2::Zero = Vector2{ 0, 0 };
+#include "Vector3.h"
+#include "Vector4.h"
+#include "Mathematics.hpp"
 
-	Vector2::Vector2(float _x, float _y) : x(_x), y(_y) {}
-
-
-	Vector2::Vector2(const Vector2& from, const Vector2& to) : x(to.x - from.x), y(to.y - from.y) {}
-
-	float Vector2::Magnitude() const
-	{
-		return sqrtf(x * x + y * y);
-	}
-
-	float Vector2::SqrMagnitude() const
-	{
-		return x * x + y * y;
-	}
-
-	float Vector2::Normalize()
-	{
-		const float m = Magnitude();
-		x /= m;
-		y /= m;
-
-		return m;
-	}
-
-	Vector2 Vector2::Normalized() const
-	{
-		const float m = Magnitude();
-		return { x / m, y / m};
-	}
-
-	float Vector2::Dot(const Vector2& v1, const Vector2& v2)
-	{
-		return v1.x * v2.x + v1.y * v2.y;
-	}
-
-	float Vector2::Cross(const Vector2& v1, const Vector2& v2)
-	{
-		return v1.x * v2.y - v1.y * v2.x;
-	}
-
-#pragma region Operator Overloads
-	Vector2 Vector2::operator*(float scale) const
-	{
-		return { x * scale, y * scale };
-	}
-
-	Vector2 Vector2::operator/(float scale) const
-	{
-		return { x / scale, y / scale };
-	}
-
-	Vector2 Vector2::operator+(const Vector2& v) const
-	{
-		return { x + v.x, y + v.y };
-	}
-
-	Vector2 Vector2::operator-(const Vector2& v) const
-	{
-		return { x - v.x, y - v.y };
-	}
-
-	Vector2 Vector2::operator-() const
-	{
-		return { -x ,-y };
-	}
-
-	Vector2& Vector2::operator*=(float scale)
-	{
-		x *= scale;
-		y *= scale;
-		return *this;
-	}
-
-	Vector2& Vector2::operator/=(float scale)
-	{
-		x /= scale;
-		y /= scale;
-		return *this;
-	}
-
-	Vector2& Vector2::operator-=(const Vector2& v)
-	{
-		x -= v.x;
-		y -= v.y;
-		return *this;
-	}
-
-	Vector2& Vector2::operator+=(const Vector2& v)
-	{
-		x += v.x;
-		y += v.y;
-		return *this;
-	}
-
-	float& Vector2::operator[](int index)
-	{
-		assert(index <= 1 && index >= 0);
-		return index == 0 ? x : y;
-	}
-
-	float Vector2::operator[](int index) const
-	{
-		assert(index <= 1 && index >= 0);
-		return index == 0 ? x : y;
-	}
-#pragma endregion
+#pragma region Operators
+Vector2 Vector2::operator*(float scalar) const
+{
+	return Vector2
+	(
+		x * scalar,
+		y * scalar
+	);
 }
+
+Vector2 Vector2::operator/(float scalar) const
+{
+	return Vector2
+	(
+		x / scalar,
+		y / scalar
+	);
+}
+
+Vector2 Vector2::operator+(const Vector2& vector) const
+{
+	return Vector2
+	(
+		x + vector.x,
+		y + vector.y
+	);
+}
+
+Vector2 Vector2::operator-(const Vector2& vector) const
+{
+	return Vector2
+	(
+		x - vector.x,
+		y - vector.y
+	);
+}
+
+Vector2 Vector2::operator-() const
+{
+	return Vector2
+	(
+		-x,
+		-y
+	);
+}
+
+Vector2& Vector2::operator*=(float scalar)
+{
+	return *this = *this * scalar;
+}
+
+Vector2& Vector2::operator/=(float scalar)
+{
+	return *this = *this / scalar;
+}
+
+Vector2& Vector2::operator+=(const Vector2& vector)
+{
+	return *this = *this + vector;
+}
+
+Vector2& Vector2::operator-=(const Vector2& vector)
+{
+	return *this = *this - vector;
+}
+
+bool Vector2::operator==(const Vector2& vector) const
+{
+	return
+		AreEqual(x, vector.x) &&
+		AreEqual(y, vector.y);
+}
+
+float& Vector2::operator[](int index)
+{
+	switch (index)
+	{
+	default:
+		return x;
+
+	case 1:
+		return y;
+	}
+}
+
+float Vector2::operator[](int index) const
+{
+	switch (index)
+	{
+	default:
+		return x;
+
+	case 1:
+		return y;
+	}
+}
+
+Vector2 operator*(float scalar, const Vector2& vector)
+{
+	return vector * scalar;
+}
+#pragma endregion Operators
+
+
+
+#pragma region PublicMethods
+float Vector2::Dot(const Vector2& vector1, const Vector2& vector2)
+{
+	return vector1.x * vector2.x + vector1.y * vector2.y;
+}
+
+float Vector2::Cross(const Vector2& vector1, const Vector2& vector2)
+{
+	return vector1.x * vector2.y - vector1.y * vector2.x;
+}
+
+float Vector2::GetSquareMagnitude() const
+{
+	return x * x + y * y;
+}
+
+float Vector2::GetMagnitude() const
+{
+	return sqrtf(GetSquareMagnitude());
+}
+
+Vector2 Vector2::GetNormalized() const
+{
+	const float magnitude{ GetMagnitude() };
+	return Vector2
+	(
+		x / magnitude,
+		y / magnitude
+	);
+}
+
+const Vector2& Vector2::Normalize()
+{
+	*this = GetNormalized();
+	return *this;
+}
+
+Vector3 Vector2::GetVector3() const
+{
+	return Vector3
+	(
+		x,
+		y,
+		0
+	);
+}
+
+Vector4 Vector2::GetVector4() const
+{
+	return Vector4
+	(
+		x,
+		y,
+		0,
+		0
+	);
+}
+
+Vector4 Vector2::GetPoint4() const
+{
+	return Vector4
+	(
+		x,
+		y,
+		0,
+		1
+	);
+}
+#pragma endregion PublicMethods

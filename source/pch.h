@@ -20,5 +20,6 @@
 #include <d3dx11effect.h>
 
 // Framework Headers
+#include "Constants.hpp"
+#include "Mathematics.hpp"
 #include "Timer.h"
-#include "Math.h"

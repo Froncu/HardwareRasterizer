@@ -1,168 +1,213 @@
 #include "pch.h"
-
 #include "Vector3.h"
 
-#include <cassert>
-
-#include "Vector4.h"
 #include "Vector2.h"
+#include "Vector4.h"
+#include "Mathematics.hpp"
 
-namespace dae {
-	const Vector3 Vector3::UnitX = Vector3{ 1, 0, 0 };
-	const Vector3 Vector3::UnitY = Vector3{ 0, 1, 0 };
-	const Vector3 Vector3::UnitZ = Vector3{ 0, 0, 1 };
-	const Vector3 Vector3::Zero = Vector3{ 0, 0, 0 };
-
-	Vector3::Vector3(float _x, float _y, float _z) : x(_x), y(_y), z(_z){}
-
-	Vector3::Vector3(const Vector4& v) : x(v.x), y(v.y), z(v.z){}
-
-	Vector3::Vector3(const Vector3& from, const Vector3& to) : x(to.x - from.x), y(to.y - from.y), z(to.z - from.z){}
-
-	float Vector3::Magnitude() const
-	{
-		return sqrtf(x * x + y * y + z * z);
-	}
-
-	float Vector3::SqrMagnitude() const
-	{
-		return x * x + y * y + z * z;
-	}
-
-	float Vector3::Normalize()
-	{
-		const float m = Magnitude();
-		x /= m;
-		y /= m;
-		z /= m;
-
-		return m;
-	}
-
-	Vector3 Vector3::Normalized() const
-	{
-		const float m = Magnitude();
-		return { x / m, y / m, z / m };
-	}
-
-	float Vector3::Dot(const Vector3& v1, const Vector3& v2)
-	{
-		return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
-	}
-
-	Vector3 Vector3::Cross(const Vector3& v1, const Vector3& v2)
-	{
-		return Vector3{
-			v1.y * v2.z - v1.z * v2.y,
-			v1.z * v2.x - v1.x * v2.z,
-			v1.x * v2.y - v1.y * v2.x
-		};
-	}
-
-	Vector3 Vector3::Project(const Vector3& v1, const Vector3& v2)
-	{
-		return (v2 * (Dot(v1, v2) / Dot(v2, v2)));
-	}
-
-	Vector3 Vector3::Reject(const Vector3& v1, const Vector3& v2)
-	{
-		return (v1 - v2 * (Dot(v1, v2) / Dot(v2, v2)));
-	}
-
-	Vector3 Vector3::Reflect(const Vector3& v1, const Vector3& v2)
-	{
-		return v1 - (2.f * Vector3::Dot(v1, v2) * v2);
-	}
-
-	Vector4 Vector3::ToPoint4() const
-	{
-		return { x, y, z, 1 };
-	}
-
-	Vector4 Vector3::ToVector4() const
-	{
-		return { x, y, z, 0 };
-	}
-
-	Vector2 Vector3::GetXY() const
-	{
-		return { x, y };
-	}
-
-#pragma region Operator Overloads
-	Vector3 Vector3::operator*(float scale) const
-	{
-		return { x * scale, y * scale, z * scale };
-	}
-
-	Vector3 Vector3::operator/(float scale) const
-	{
-		return { x / scale, y / scale, z / scale };
-	}
-
-	Vector3 Vector3::operator+(const Vector3& v) const
-	{
-		return { x + v.x, y + v.y, z + v.z };
-	}
-
-	Vector3 Vector3::operator-(const Vector3& v) const
-	{
-		return { x - v.x, y - v.y, z - v.z };
-	}
-
-	Vector3 Vector3::operator-() const
-	{
-		return { -x ,-y,-z };
-	}
-
-	Vector3& Vector3::operator*=(float scale)
-	{
-		x *= scale;
-		y *= scale;
-		z *= scale;
-		return *this;
-	}
-
-	Vector3& Vector3::operator/=(float scale)
-	{
-		x /= scale;
-		y /= scale;
-		z /= scale;
-		return *this;
-	}
-
-	Vector3& Vector3::operator-=(const Vector3& v)
-	{
-		x -= v.x;
-		y -= v.y;
-		z -= v.z;
-		return *this;
-	}
-
-	Vector3& Vector3::operator+=(const Vector3& v)
-	{
-		x += v.x;
-		y += v.y;
-		z += v.z;
-		return *this;
-	}
-
-	float& Vector3::operator[](int index)
-	{
-		assert(index <= 2 && index >= 0);
-
-		if (index == 0) return x;
-		if (index == 1) return y;
-		return z;
-	}
-
-	float Vector3::operator[](int index) const
-	{
-		assert(index <= 2 && index >= 0);
-
-		if (index == 0) return x;
-		if (index == 1) return y;
-		return z;
-	}
-#pragma endregion
+#pragma region Operators
+Vector3 Vector3::operator*(float scalar) const
+{
+	return Vector3
+	(
+		x * scalar,
+		y * scalar,
+		z * scalar
+	);
 }
+
+Vector3 Vector3::operator/(float scalar) const
+{
+	return Vector3
+	(
+		x / scalar,
+		y / scalar,
+		z / scalar
+	);
+}
+
+Vector3 Vector3::operator+(const Vector3& vector) const
+{
+	return Vector3
+	(
+		x + vector.x,
+		y + vector.y,
+		z + vector.z
+	);
+}
+
+Vector3 Vector3::operator-(const Vector3& vector) const
+{
+	return Vector3
+	(
+		x - vector.x,
+		y - vector.y,
+		z - vector.z
+	);
+}
+
+Vector3 Vector3::operator-() const
+{
+	return Vector3
+	(
+		-x,
+		-y,
+		-z
+	);
+}
+
+Vector3& Vector3::operator*=(float scalar)
+{
+	return *this = *this * scalar;
+}
+
+Vector3& Vector3::operator/=(float scalar)
+{
+	return *this = *this / scalar;
+}
+
+Vector3& Vector3::operator+=(const Vector3& vector)
+{
+	return *this = *this + vector;
+}
+
+Vector3& Vector3::operator-=(const Vector3& vector)
+{
+	return *this = *this - vector;
+}
+
+bool Vector3::operator==(const Vector3& vector) const
+{
+	return
+		AreEqual(x, vector.x) &&
+		AreEqual(y, vector.y) &&
+		AreEqual(z, vector.z);
+}
+
+float& Vector3::operator[](int index)
+{
+	switch (index)
+	{
+	default:
+		return x;
+
+	case 1:
+		return y;
+
+	case 2:
+		return z;
+	}
+}
+
+float Vector3::operator[](int index) const
+{
+	switch (index)
+	{
+	default:
+		return x;
+
+	case 1:
+		return y;
+
+	case 2:
+		return z;
+	}
+}
+
+Vector3 operator*(float scalar, const Vector3& vector)
+{
+	return vector * scalar;
+}
+#pragma endregion Operators
+
+
+
+#pragma region PublicMethods
+float Vector3::GetSquareMagnitude() const
+{
+	return x * x + y * y + z * z;
+}
+
+float Vector3::GetMagnitude() const
+{
+	return sqrtf(GetSquareMagnitude());
+}
+
+Vector3 Vector3::GetNormalized() const
+{
+	const float magnitude{ GetMagnitude() };
+	return Vector3
+	(
+		x / magnitude,
+		y / magnitude,
+		z / magnitude
+	);
+}
+
+const Vector3& Vector3::Normalize()
+{
+	*this = GetNormalized();
+	return *this;
+}
+
+Vector2 Vector3::GetVector2() const
+{
+	return Vector2
+	(
+		x,
+		y
+	);
+}
+
+Vector4 Vector3::GetVector4() const
+{
+	return Vector4
+	(
+		x,
+		y,
+		z,
+		0
+	);
+}
+
+Vector4 Vector3::GetPoint4() const
+{
+	return Vector4
+	(
+		x,
+		y,
+		z,
+		1
+	);
+}
+
+float Vector3::Dot(const Vector3& vector1, const Vector3& vector2)
+{
+	return vector1.x * vector2.x + vector1.y * vector2.y + vector1.z * vector2.z;
+}
+
+Vector3 Vector3::Cross(const Vector3& vector1, const Vector3& vector2)
+{
+	return Vector3
+	(
+		vector1.y * vector2.z - vector1.z * vector2.y,
+		vector1.z * vector2.x - vector1.x * vector2.z,
+		vector1.x * vector2.y - vector1.y * vector2.x
+	);
+}
+
+Vector3 Vector3::Project(const Vector3& vector1, const Vector3& vector2)
+{
+	return vector2 * (Dot(vector1, vector2) / Dot(vector2, vector2));
+}
+
+Vector3 Vector3::Reject(const Vector3& vector1, const Vector3& vector2)
+{
+	return vector1 - Project(vector1, vector2);
+}
+
+Vector3 Vector3::Reflect(const Vector3& vector1, const Vector3& vector2)
+{
+	return vector1 - (2.0f * Dot(vector1, vector2) * vector2);
+}
+#pragma endregion PublicMethods

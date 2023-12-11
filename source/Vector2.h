@@ -1,46 +1,47 @@
 #pragma once
 
-namespace dae
+struct Vector3;
+struct Vector4;
+struct Vector2
 {
-	struct Vector2
-	{
-		float x{};
-		float y{};
+public:
+	Vector2 operator*(float scalar) const;
+	Vector2 operator/(float scalar) const;
+	Vector2 operator+(const Vector2& vector) const;
+	Vector2 operator-(const Vector2& vector) const;
+	Vector2 operator-() const;
 
-		Vector2() = default;
-		Vector2(float _x, float _y);
-		Vector2(const Vector2& from, const Vector2& to);
+	Vector2& operator*=(float scalar);
+	Vector2& operator/=(float scalar);
+	Vector2& operator+=(const Vector2& vector);
+	Vector2& operator-=(const Vector2& vector);
 
-		float Magnitude() const;
-		float SqrMagnitude() const;
-		float Normalize();
-		Vector2 Normalized() const;
+	bool operator==(const Vector2& vector) const;
 
-		static float Dot(const Vector2& v1, const Vector2& v2);
-		static float Cross(const Vector2& v1, const Vector2& v2);
+	float& operator[](int index);
+	float operator[](int index) const;
 
-		//Member Operators
-		Vector2 operator*(float scale) const;
-		Vector2 operator/(float scale) const;
-		Vector2 operator+(const Vector2& v) const;
-		Vector2 operator-(const Vector2& v) const;
-		Vector2 operator-() const;
-		//Vector2& operator-();
-		Vector2& operator+=(const Vector2& v);
-		Vector2& operator-=(const Vector2& v);
-		Vector2& operator/=(float scale);
-		Vector2& operator*=(float scale);
-		float& operator[](int index);
-		float operator[](int index) const;
+	static float Dot(const Vector2& vector1, const Vector2& vector2);
+	static float Cross(const Vector2& vector1, const Vector2& vector2);
 
-		static const Vector2 UnitX;
-		static const Vector2 UnitY;
-		static const Vector2 Zero;
-	};
+	float GetSquareMagnitude() const;
+	float GetMagnitude() const;
 
-	//Global Operators
-	inline Vector2 operator*(float scale, const Vector2& v)
-	{
-		return { v.x * scale, v.y * scale };
-	}
-}
+	Vector2 GetNormalized() const;
+	const Vector2& Normalize();
+
+	Vector3 GetVector3() const;
+	Vector4 GetVector4() const;
+	Vector4 GetPoint4() const;
+
+	float
+		x,
+		y;
+};
+
+Vector2 operator*(float scalar, const Vector2& vector);
+
+static constexpr Vector2
+VECTOR2_UNIT_X{ 1.0f, 0.0f },
+VECTOR2_UNIT_Y{ 0.0f, 1.0f },
+VECTOR2_ZERO{ 0.0f, 0.0f };

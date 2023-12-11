@@ -1,124 +1,41 @@
 #pragma once
-#include "MathHelpers.h"
 
-namespace dae
+struct ColorRGB
 {
-	struct ColorRGB
-	{
-		float r{};
-		float g{};
-		float b{};
+public:
+	ColorRGB operator*(const ColorRGB& color) const;
+	ColorRGB operator*(float scalar) const;
+	ColorRGB operator/(const ColorRGB& color) const;
+	ColorRGB operator/(float scalar) const;
+	ColorRGB operator+(const ColorRGB& color) const;
+	ColorRGB operator-(const ColorRGB& color) const;
 
-		void MaxToOne()
-		{
-			const float maxValue = std::max(r, std::max(g, b));
-			if (maxValue > 1.f)
-				*this /= maxValue;
-		}
+	const ColorRGB& operator*=(const ColorRGB& color);
+	const ColorRGB& operator*=(float scalar);
+	const ColorRGB& operator/=(const ColorRGB& color);
+	const ColorRGB& operator/=(float scalar);
+	const ColorRGB& operator+=(const ColorRGB& color);
+	const ColorRGB& operator-=(const ColorRGB& color);
 
-		static ColorRGB Lerp(const ColorRGB& c1, const ColorRGB& c2, float factor)
-		{
-			return { Lerpf(c1.r, c2.r, factor), Lerpf(c1.g, c2.g, factor), Lerpf(c1.b, c2.b, factor) };
-		}
+	ColorRGB GetMaxToOne() const;
+	ColorRGB& MaxToOne();
 
-		#pragma region ColorRGB (Member) Operators
-		const ColorRGB& operator+=(const ColorRGB& c)
-		{
-			r += c.r;
-			g += c.g;
-			b += c.b;
+	float
+		red,
+		green,
+		blue;
+};
 
-			return *this;
-		}
+ColorRGB operator*(float scalar, const ColorRGB& color);
 
-		ColorRGB operator+(const ColorRGB& c) const
-		{
-			return { r + c.r, g + c.g, b + c.b };
-		}
-
-		const ColorRGB& operator-=(const ColorRGB& c)
-		{
-			r -= c.r;
-			g -= c.g;
-			b -= c.b;
-
-			return *this;
-		}
-
-		ColorRGB operator-(const ColorRGB& c) const
-		{
-			return { r - c.r, g - c.g, b - c.b };
-		}
-
-		const ColorRGB& operator*=(const ColorRGB& c)
-		{
-			r *= c.r;
-			g *= c.g;
-			b *= c.b;
-
-			return *this;
-		}
-
-		ColorRGB operator*(const ColorRGB& c) const
-		{
-			return { r * c.r, g * c.g, b * c.b };
-		}
-
-		const ColorRGB& operator/=(const ColorRGB& c)
-		{
-			r /= c.r;
-			g /= c.g;
-			b /= c.b;
-
-			return *this;
-		}
-
-		const ColorRGB& operator*=(float s)
-		{
-			r *= s;
-			g *= s;
-			b *= s;
-
-			return *this;
-		}
-
-		ColorRGB operator*(float s) const
-		{
-			return { r * s, g * s,b * s };
-		}
-
-		const ColorRGB& operator/=(float s)
-		{
-			r /= s;
-			g /= s;
-			b /= s;
-
-			return *this;
-		}
-
-		ColorRGB operator/(float s) const
-		{
-			return { r / s, g / s,b / s };
-		}
-		#pragma endregion
-	};
-
-	//ColorRGB (Global) Operators
-	inline ColorRGB operator*(float s, const ColorRGB& c)
-	{
-		return c * s;
-	}
-
-	namespace colors
-	{
-		static ColorRGB Red{ 1,0,0 };
-		static ColorRGB Blue{ 0,0,1 };
-		static ColorRGB Green{ 0,1,0 };
-		static ColorRGB Yellow{ 1,1,0 };
-		static ColorRGB Cyan{ 0,1,1 };
-		static ColorRGB Magenta{ 1,0,1 };
-		static ColorRGB White{ 1,1,1 };
-		static ColorRGB Black{ 0,0,0 };
-		static ColorRGB Gray{ 0.5f,0.5f,0.5f };
-	}
-}
+static constexpr ColorRGB
+RED{ 1.0f, 0.0f, 0.0f },
+BLUE{ 0.0f, 0.0f, 1.0f },
+GREEN{ 0.0f, 1.0f, 0.0f },
+YELLOW{ 1.0f, 1.0f, 0.0f },
+CYAN{ 0.0f, 1.0f, 1.0f },
+MAGENTA{ 1.0f, 0.0f, 1.0f },
+WHITE{ 1.0f, 1.0f, 1.0f },
+BLACK{ 0.0f, 0.0f, 0.0f },
+GRAY{ 0.5f ,0.5f ,0.5f },
+DARK_GRAY{ 0.25f ,0.25f ,0.25f };

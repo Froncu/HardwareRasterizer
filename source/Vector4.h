@@ -1,36 +1,49 @@
 #pragma once
 
-namespace dae
+struct Vector2;
+struct Vector3;
+struct Vector4
 {
-	struct Vector2;
-	struct Vector3;
-	struct Vector4
-	{
-		float x;
-		float y;
-		float z;
-		float w;
+public:
+	Vector4 operator*(float scalar) const;
+	Vector4 operator/(float scalar) const;
+	Vector4 operator+(const Vector4& vector) const;
+	Vector4 operator-(const Vector4& vector) const;
 
-		Vector4() = default;
-		Vector4(float _x, float _y, float _z, float _w);
-		Vector4(const Vector3& v, float _w);
+	Vector4& operator*=(float scalar);
+	Vector4& operator/=(float scalar);
+	Vector4& operator+=(const Vector4& vector);
+	Vector4& operator-=(const Vector4& vector);
 
-		float Magnitude() const;
-		float SqrMagnitude() const;
-		float Normalize();
-		Vector4 Normalized() const;
+	bool operator==(const Vector4& vector) const;
 
-		Vector2 GetXY() const;
-		Vector3 GetXYZ() const;
+	float& operator[](int index);
+	float operator[](int index) const;
 
-		static float Dot(const Vector4& v1, const Vector4& v2);
+	static float Dot(const Vector4& vector1, const Vector4& vector2);
 
-		// operator overloading
-		Vector4 operator*(float scale) const;
-		Vector4 operator+(const Vector4& v) const;
-		Vector4 operator-(const Vector4& v) const;
-		Vector4& operator+=(const Vector4& v);
-		float& operator[](int index);
-		float operator[](int index) const;
-	};
-}
+	float GetSquareMagnitude() const;
+	float GetMagnitude() const;
+
+	Vector4 GetNormalized() const;
+	const Vector4& Normalize();
+
+	Vector2 GetVector2() const;
+	Vector3 GetVector3() const;
+
+	float
+		x,
+		y,
+		z,
+		w;
+
+};
+
+Vector4 operator*(float scalar, const Vector4& vector);
+
+static constexpr Vector4
+VECTOR4_UNIT_X{ 1.0f, 0.0f, 0.0f, 0.0f },
+VECTOR4_UNIT_Y{ 0.0f, 1.0f, 0.0f, 0.0f },
+VECTOR4_UNIT_Z{ 0.0f, 0.0f, 1.0f, 0.0f },
+VECTOR4_UNIT_T{ 0.0f, 0.0f, 0.0f, 1.0f },
+VECTOR4_ZERO{ 0.0f, 0.0f, 0.0f, 0.0f };

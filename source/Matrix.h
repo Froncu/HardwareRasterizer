@@ -1,75 +1,72 @@
 #pragma once
-#include "Vector3.h"
+
 #include "Vector4.h"
 
-namespace dae {
-	struct Matrix
+struct Vector3;
+class Matrix final
+{
+public:
+	~Matrix() = default;
+
+	Matrix(const Matrix&) = default;
+	Matrix(Matrix&&) noexcept = default;
+	Matrix& operator=(const Matrix&) = default;
+	Matrix& operator=(Matrix&&) noexcept = default;
+
+	Matrix() = default;
+	constexpr Matrix(const Vector4& xAxis, const Vector4& yAxis, const Vector4& zAxis, const Vector4& translator) :
+		m_Data{ xAxis, yAxis, zAxis, translator }
 	{
-		Matrix() = default;
-		Matrix(
-			const Vector3& xAxis,
-			const Vector3& yAxis,
-			const Vector3& zAxis,
-			const Vector3& t);
+	}
 
-		Matrix(
-			const Vector4& xAxis,
-			const Vector4& yAxis,
-			const Vector4& zAxis,
-			const Vector4& t);
+	Matrix operator*(const Matrix& matrix) const;
 
-		Matrix(const Matrix& m);
+	const Matrix& operator*=(const Matrix& matrix);
 
-		Vector3 TransformVector(const Vector3& v) const;
-		Vector3 TransformVector(float x, float y, float z) const;
-		Vector3 TransformPoint(const Vector3& p) const;
-		Vector3 TransformPoint(float x, float y, float z) const;
+	bool operator==(const Matrix& matrix) const;
 
-		Vector4 TransformPoint(const Vector4& p) const;
-		Vector4 TransformPoint(float x, float y, float z, float w) const;
+	Vector4& operator[](int index);
+	const Vector4& operator[](int index) const;
 
-		const Matrix& Transpose();
-		const Matrix& Inverse();
+	static Matrix Inverse(const Matrix& matrix);
+	static Matrix Transpose(const Matrix& matrix);
 
-		Vector3 GetAxisX() const;
-		Vector3 GetAxisY() const;
-		Vector3 GetAxisZ() const;
-		Vector3 GetTranslation() const;
+	static Matrix CreateTranslator(const Vector3& translator);
+	static Matrix CreateTranslator(float x, float y, float z);
 
-		static Matrix CreateTranslation(float x, float y, float z);
-		static Matrix CreateTranslation(const Vector3& t);
-		static Matrix CreateRotationX(float pitch);
-		static Matrix CreateRotationY(float yaw);
-		static Matrix CreateRotationZ(float roll);
-		static Matrix CreateRotation(float pitch, float yaw, float roll);
-		static Matrix CreateRotation(const Vector3& r);
-		static Matrix CreateScale(float sx, float sy, float sz);
-		static Matrix CreateScale(const Vector3& s);
-		static Matrix Transpose(const Matrix& m);
-		static Matrix Inverse(const Matrix& m);
+	static Matrix CreateRotorX(float pitch);
+	static Matrix CreateRotorY(float yaw);
+	static Matrix CreateRotorZ(float roll);
+	static Matrix CreateRotor(float pitch, float yaw, float roll);
 
-		static Matrix CreateLookAtLH(const Vector3& origin, const Vector3& forward, const Vector3& up);
-		static Matrix CreatePerspectiveFovLH(float fovy, float aspect, float zn, float zf);
+	static Matrix CreateScalar(float scalarX, float scalarY, float scalarZ);
+	static Matrix CreateScalar(float scalar);
 
-		Vector4& operator[](int index);
-		Vector4 operator[](int index) const;
-		Matrix operator*(const Matrix& m) const;
-		const Matrix& operator*=(const Matrix& m);
+	static Matrix CreateLookAtLH(const Vector3& origin, const Vector3& forward, const Vector3& up);
+	static Matrix CreatePerspectiveFovLH(float fovy, float aspect, float zn, float zf);
 
-	private:
+	Vector3 TransformVector(float x, float y, float z) const;
+	Vector3 TransformVector(const Vector3& vector) const;
 
-		//Row-Major Matrix
-		Vector4 data[4]
-		{
-			{1,0,0,0}, //xAxis
-			{0,1,0,0}, //yAxis
-			{0,0,1,0}, //zAxis
-			{0,0,0,1}  //T
-		};
+	Vector3 TransformPoint(float x, float y, float z) const;
+	Vector3 TransformPoint(const Vector3& point) const;
+	Vector4 TransformPoint(float x, float y, float z, float w) const;
+	Vector4 TransformPoint(const Vector4& point) const;
 
-		// v0x v0y v0z v0w
-		// v1x v1y v1z v1w
-		// v2x v2y v2z v2w
-		// v3x v3y v3z v3w
-	};
-}
+	Matrix GetInversed() const;
+	const Matrix& Inverse();
+
+	Matrix GetTransposed() const;
+	const Matrix& Transpose();
+
+private:
+	Vector4 m_Data[4];
+};
+
+static constexpr Matrix IDENTITY
+{
+	VECTOR4_UNIT_X,
+	VECTOR4_UNIT_Y,
+	VECTOR4_UNIT_Z,
+	VECTOR4_UNIT_T
+};

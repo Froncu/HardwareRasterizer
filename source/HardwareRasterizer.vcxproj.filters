@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Mathematics">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Mathematics\Matrix">
+      <UniqueIdentifier>{59d56700-914a-467c-aa2b-1893053f99c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mathematics\Vectors">
+      <UniqueIdentifier>{15d2066a-5a71-455f-b5e5-7dace78fe088}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mathematics\Vectors\Vector4">
+      <UniqueIdentifier>{21b57ddb-f3d7-47fb-8266-4150d513fd01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mathematics\Vectors\Vector3">
+      <UniqueIdentifier>{de12ea54-9031-422b-8c65-784118a7c35b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mathematics\Vectors\Vector2">
+      <UniqueIdentifier>{7ecc877c-138c-448b-b81c-7b620e46928d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Miscellaneous">
+      <UniqueIdentifier>{72056cb6-72a2-42b7-b05e-376f1ddd957e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Miscellaneous\Timer">
+      <UniqueIdentifier>{c41fb242-b27e-4e47-9523-b112760e96a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Miscellaneous\Renderer">
+      <UniqueIdentifier>{049fd5df-16cc-48e6-9234-f5b230d9d0e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Miscellaneous\ColorRGB">
+      <UniqueIdentifier>{719984a1-0596-454b-ba53-259f980a2012}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="Mathematics.hpp">
+      <Filter>Mathematics</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix.h">
+      <Filter>Mathematics\Matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>Mathematics\Vectors\Vector3</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector2.h">
+      <Filter>Mathematics\Vectors\Vector2</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector4.h">
+      <Filter>Mathematics\Vectors\Vector4</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Miscellaneous\Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Miscellaneous\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorRGB.h">
+      <Filter>Miscellaneous\ColorRGB</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants.hpp">
+      <Filter>Mathematics</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="Matrix.cpp">
+      <Filter>Mathematics\Matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector3.cpp">
+      <Filter>Mathematics\Vectors\Vector3</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector2.cpp">
+      <Filter>Mathematics\Vectors\Vector2</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector4.cpp">
+      <Filter>Mathematics\Vectors\Vector4</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Miscellaneous\Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Miscellaneous\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorRGB.cpp">
+      <Filter>Miscellaneous\ColorRGB</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
