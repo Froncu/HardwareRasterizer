@@ -59,6 +59,8 @@ public:
 	Matrix GetTransposed() const;
 	const Matrix& Transpose();
 
+	const float* GetDataPointer() const;
+
 private:
 	Vector4 m_Data[4];
 };

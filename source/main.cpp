@@ -2,6 +2,7 @@
 
 #include "vld.h"
 #include "Renderer.h"
+#include "Camera.h"
 
 #include <string>
 
@@ -23,6 +24,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* args[])
 	SDL_SetRelativeMouseMode(SDL_bool(true));
 
 	Renderer renderer{ pWindow };
+	Camera camera{ Vector3(0.0f, 0.0f, -10.0f) };
 
 	std::cout << CONTROLS;
 
@@ -42,20 +44,21 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* args[])
 				isLooping = false;
 				break;
 
-			case SDL_KEYUP:
-				switch (event.key.keysym.scancode)
-				{
-				}
-				break;
+			//case SDL_KEYUP:
+			//	switch (event.key.keysym.scancode)
+			//	{
+			//	}
+			//	break;
 
 			case SDL_MOUSEWHEEL:
-
+				camera.IncrementFieldOfViewAngle(-event.wheel.preciseY / 20.0f);
 				break;
 			}
 		}
 
+		camera.Update(timer);
 		renderer.Update(timer);
-		renderer.Render();
+		renderer.Render(camera.GetCameraMatrix());
 
 		timer.Update();
 		printTimer += timer.GetElapsed();

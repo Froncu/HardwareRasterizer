@@ -278,4 +278,9 @@ const Matrix& Matrix::Transpose()
 	*this = GetTransposed();
 	return *this;
 }
+
+const float* Matrix::GetDataPointer() const
+{
+	return reinterpret_cast<const float*>(&m_Data);
+}
 #pragma endregion PublicMethods

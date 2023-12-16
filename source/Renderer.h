@@ -20,7 +20,7 @@ public:
 	Renderer(SDL_Window* pWindow);
 
 	void Update(const Timer& timer);
-	void Render() const;
+	void Render(const Matrix& cameraMatrix) const;
 
 private:
 	void ClearBuffers(const ColorRGB& color = DARK_GRAY) const;

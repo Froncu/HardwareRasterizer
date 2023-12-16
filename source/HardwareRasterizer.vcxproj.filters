@@ -41,6 +41,9 @@
     <Filter Include="Objects\Mesh">
       <UniqueIdentifier>{95420dff-6c5a-4155-8065-5de101a141c4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Miscellaneous\Camera">
+      <UniqueIdentifier>{06bdd1fb-92e7-4cb3-a347-0852a5164c2c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -80,6 +83,9 @@
     <ClInclude Include="Mesh.h">
       <Filter>Objects\Mesh</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Miscellaneous\Camera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -110,6 +116,9 @@
     </ClCompile>
     <ClCompile Include="Mesh.cpp">
       <Filter>Objects\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Miscellaneous\Camera</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

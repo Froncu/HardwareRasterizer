@@ -10,11 +10,28 @@ Renderer::Renderer(SDL_Window* pWindow) :
 	{
 		m_pDevice,
 		{
-			{ Vector3(0.0f, 0.5f, 0.5f), RED },
-			{ Vector3(0.5f, -0.5f, 0.5f), BLUE },
-			{ Vector3(-0.5f, -0.5f, 0.5f), GREEN }
+			{ Vector3(-3.0f, 3.0f, 5.0f), RED },
+			{ Vector3(0.0f, 3.0f, 5.0f), GREEN },
+			{ Vector3(3.0f, 3.0f, 5.0f), BLUE },
+
+			{ Vector3(-3.0f, 0.0f, 5.0f), RED },
+			{ Vector3(0.0f, 0.0f, 5.0f), GREEN },
+			{ Vector3(3.0f, 0.0f, 5.0f), BLUE },
+
+			{ Vector3(-3.0f, -3.0f, 5.0f), RED },
+			{ Vector3(0.0f, -3.0f, 5.0f), GREEN },
+			{ Vector3(3.0f, -3.0f, 5.0f), BLUE },
 		},
-		{ 0, 1, 2 }
+		{ 
+			0, 4, 3,
+			0, 1, 4,
+			1, 5, 4,
+			1, 2, 5,
+			3, 7, 6,
+			3, 4, 7,
+			4, 8, 7,
+			4, 5, 8
+		}
 	}
 {
 	if (!m_IsInitialized)
@@ -49,14 +66,14 @@ void Renderer::Update(const Timer& timer)
 
 }
 
-void Renderer::Render() const
+void Renderer::Render(const Matrix& cameraMatrix) const
 {
 	if (!m_IsInitialized)
 		return;
 
 	ClearBuffers();
 
-	m_Mesh.Render(m_pDeviceContext);
+	m_Mesh.Render(m_pDeviceContext, cameraMatrix);
 
 	m_pSwapChain->Present(0, 0);
 }
