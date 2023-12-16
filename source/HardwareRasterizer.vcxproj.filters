@@ -44,6 +44,9 @@
     <Filter Include="Miscellaneous\Camera">
       <UniqueIdentifier>{06bdd1fb-92e7-4cb3-a347-0852a5164c2c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Objects\Texture">
+      <UniqueIdentifier>{dd8b2eeb-ca84-4185-8758-493f2c8d82f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -71,9 +74,6 @@
     <ClInclude Include="ColorRGB.h">
       <Filter>Miscellaneous\ColorRGB</Filter>
     </ClInclude>
-    <ClInclude Include="Constants.hpp">
-      <Filter>Mathematics</Filter>
-    </ClInclude>
     <ClInclude Include="Effect.h">
       <Filter>Miscellaneous\Effect</Filter>
     </ClInclude>
@@ -85,6 +85,12 @@
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Miscellaneous\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Objects\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants.hpp">
+      <Filter>Miscellaneous</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -119,6 +125,9 @@
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Miscellaneous\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Objects\Texture</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -6,33 +6,7 @@ Renderer::Renderer(SDL_Window* pWindow) :
 	m_pWindow{ pWindow },
 	m_IsInitialized{ SUCCEEDED(InitializeDirectX()) },
 
-	m_Mesh
-	{
-		m_pDevice,
-		{
-			{ Vector3(-3.0f, 3.0f, 5.0f), RED },
-			{ Vector3(0.0f, 3.0f, 5.0f), GREEN },
-			{ Vector3(3.0f, 3.0f, 5.0f), BLUE },
-
-			{ Vector3(-3.0f, 0.0f, 5.0f), RED },
-			{ Vector3(0.0f, 0.0f, 5.0f), GREEN },
-			{ Vector3(3.0f, 0.0f, 5.0f), BLUE },
-
-			{ Vector3(-3.0f, -3.0f, 5.0f), RED },
-			{ Vector3(0.0f, -3.0f, 5.0f), GREEN },
-			{ Vector3(3.0f, -3.0f, 5.0f), BLUE },
-		},
-		{ 
-			0, 4, 3,
-			0, 1, 4,
-			1, 5, 4,
-			1, 2, 5,
-			3, 7, 6,
-			3, 4, 7,
-			4, 8, 7,
-			4, 5, 8
-		}
-	}
+	m_Mesh{ m_pDevice, "Resources/vehicle.obj" }
 {
 	if (!m_IsInitialized)
 		std::cout << "DirectX initialization failed!\n";
@@ -63,7 +37,6 @@ Renderer::~Renderer()
 #pragma region PublicMethods
 void Renderer::Update(const Timer& timer)
 {
-
 }
 
 void Renderer::Render(const Matrix& cameraMatrix) const

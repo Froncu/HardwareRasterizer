@@ -1,8 +1,9 @@
 #include "pch.h"
 #include "Effect.h"
 
-#pragma region PublicMethods
-ID3DX11Effect* Effect::Load(ID3D11Device* const pDevice, const std::wstring& effectPath)
+#pragma region Constructors/Destructor
+Effect::Effect(ID3D11Device* const pDevice, const std::wstring& effectPath) :
+	m_pDiffuseTexture{}
 {
 	DWORD shaderFlags{};
 
@@ -11,7 +12,6 @@ ID3DX11Effect* Effect::Load(ID3D11Device* const pDevice, const std::wstring& eff
 	shaderFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
 #endif
 
-	ID3DX11Effect* pEffect;
 	ID3D10Blob* pErrorBlob{};
 
 	if (FAILED(D3DX11CompileEffectFromFile
@@ -22,7 +22,7 @@ ID3DX11Effect* Effect::Load(ID3D11Device* const pDevice, const std::wstring& eff
 		shaderFlags,
 		0,
 		pDevice,
-		&pEffect,
+		&m_pEffect,
 		&pErrorBlob
 	)))
 	{
@@ -43,7 +43,31 @@ ID3DX11Effect* Effect::Load(ID3D11Device* const pDevice, const std::wstring& eff
 
 		std::wcout << stringStream.str() << std::endl;
 	}
+	else
+		m_pDiffuseTexture = m_pEffect->GetVariableByName("gDiffuseTexture")->AsShaderResource();
+}
 
-	return pEffect;
+Effect::~Effect()
+{
+	m_pEffect->Release();
+}
+#pragma endregion Constructors/Destructor
+
+
+
+#pragma region Operators
+ID3DX11Effect* Effect::operator->() const
+{
+	return m_pEffect;
+}
+#pragma endregion Operators
+
+
+
+#pragma region PublicMethods
+void Effect::SetDiffuseTexture(const Texture& texture) const
+{
+	if (m_pDiffuseTexture)
+		m_pDiffuseTexture->SetResource(texture.GetShaderResourceView());
 }
 #pragma region PublicMethods
