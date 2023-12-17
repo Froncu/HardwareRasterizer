@@ -22,6 +22,8 @@ public:
 	void Update(const Timer& timer);
 	void Render(const Matrix& cameraMatrix) const;
 
+	void ToggleFliteringType();
+
 private:
 	void ClearBuffers(const ColorRGB& color = DARK_GRAY) const;
 
@@ -48,4 +50,5 @@ private:
 	ID3D11RenderTargetView* m_pRenderTargetView;
 
 	Mesh m_Mesh;
+	Mesh::FilteringType m_FilteringType;
 };

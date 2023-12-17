@@ -7,6 +7,15 @@
 class Mesh final
 {
 public:
+	enum class FilteringType
+	{
+		point,
+		linear,
+		anisotropic,
+
+		COUNT
+	};
+
 	~Mesh();
 
 	Mesh(const Mesh& other) = default;
@@ -19,6 +28,7 @@ public:
 
 	void Render(ID3D11DeviceContext* const pDeviceContext, const Matrix& viewProjectionMatrix) const;
 
+	void SetFilteringType(FilteringType filteringType);
 	void SetTranslator(const Vector3& translator);
 	void SetRotorY(float yaw);
 	void SetScalar(float scalar);

@@ -24,7 +24,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* args[])
 	SDL_SetRelativeMouseMode(SDL_bool(true));
 
 	Renderer renderer{ pWindow };
-	Camera camera{ Vector3(0.0f, 0.0f, -10.0f) };
+	Camera camera{ Vector3(0.0f, 0.0f, -50.0f) };
 
 	std::cout << CONTROLS;
 
@@ -44,11 +44,14 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* args[])
 				isLooping = false;
 				break;
 
-			//case SDL_KEYUP:
-			//	switch (event.key.keysym.scancode)
-			//	{
-			//	}
-			//	break;
+			case SDL_KEYUP:
+				switch (event.key.keysym.scancode)
+				{
+				case SDL_SCANCODE_F2:
+					renderer.ToggleFliteringType();
+					break;
+				}
+				break;
 
 			case SDL_MOUSEWHEEL:
 				camera.IncrementFieldOfViewAngle(-event.wheel.preciseY / 20.0f);

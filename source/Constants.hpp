@@ -9,7 +9,7 @@ constexpr char CONTROLS[]
 {
 	"--------\n"
 	"CONTROLS:\n"
-	// "Button: Action\n"
-	// "Button: Action\n"
+	"F2: Toggle Filtering Methods\n"
+	"SCROLL: In-/decrement FOV angle\n"
 	// ...
 };

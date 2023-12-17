@@ -16,7 +16,7 @@ Mesh::~Mesh()
 
 Mesh::Mesh(ID3D11Device* const pDevice, const std::vector<VertexIn>& vVertices, const std::vector<uint32_t> vIndices) :
 	m_Effect{ pDevice, L"Resources/PositionColor3D.fx" },
-	m_pEffectTechnique{ m_Effect->GetTechniqueByName("DefaultTechnique") },
+	m_pEffectTechnique{ m_Effect->GetTechniqueByIndex(0) },
 
 	m_Translator{ IDENTITY },
 	m_Rotor{ IDENTITY },
@@ -34,7 +34,7 @@ Mesh::Mesh(ID3D11Device* const pDevice, const std::vector<VertexIn>& vVertices, 
 
 Mesh::Mesh(ID3D11Device* const pDevice, const std::string& OBJFilePath, bool flipAxisAndWinding) :
 	m_Effect{ pDevice, L"Resources/PositionColor3D.fx" },
-	m_pEffectTechnique{ m_Effect->GetTechniqueByName("DefaultTechnique") },
+	m_pEffectTechnique{ m_Effect->GetTechniqueByIndex(0) },
 
 	m_Translator{ IDENTITY },
 	m_Rotor{ IDENTITY },
@@ -79,6 +79,11 @@ void Mesh::Render(ID3D11DeviceContext* const pDeviceContext, const Matrix& viewP
 		m_pEffectTechnique->GetPassByIndex(pass)->Apply(0, pDeviceContext);
 		pDeviceContext->DrawIndexed(m_NumberOfIndices, 0, 0);
 	}
+}
+
+void Mesh::SetFilteringType(FilteringType filteringType)
+{
+	m_pEffectTechnique = m_Effect->GetTechniqueByIndex(static_cast<uint32_t>(filteringType));
 }
 
 void Mesh::SetTranslator(const Vector3& translator)
