@@ -20,7 +20,7 @@ public:
 	Renderer(SDL_Window* pWindow);
 
 	void Update(const Timer& timer);
-	void Render(const Matrix& cameraMatrix) const;
+	void Render(const Matrix& cameraMatrix);
 
 	void ToggleFliteringType();
 

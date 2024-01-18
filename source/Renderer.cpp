@@ -40,7 +40,7 @@ void Renderer::Update(const Timer& timer)
 	m_Mesh.SetRotorY(90.0f * TO_RADIANS * timer.GetTotal());
 }
 
-void Renderer::Render(const Matrix& cameraMatrix) const
+void Renderer::Render(const Matrix& cameraMatrix)
 {
 	if (!m_IsInitialized)
 		return;
@@ -49,7 +49,9 @@ void Renderer::Render(const Matrix& cameraMatrix) const
 
 	m_Mesh.Render(m_pDeviceContext, cameraMatrix);
 
-	m_pSwapChain->Present(0, 0);
+	m_pSwapChain->Present(0, DXGI_PRESENT_ALLOW_TEARING);
+
+	BindAsActiveBuffers(m_pDeviceContext, m_pDepthStencilView, m_pRenderTargetView);
 }
 
 void Renderer::ToggleFliteringType()
@@ -166,18 +168,18 @@ HRESULT Renderer::CreateSwapChain(SDL_Window* const pWindow, IDXGIFactory1* cons
 	DXGI_SWAP_CHAIN_DESC swapChainDescription{};
 	swapChainDescription.BufferDesc.Width = WINDOW_WIDTH;
 	swapChainDescription.BufferDesc.Height = WINDOW_HEIGHT;
-	swapChainDescription.BufferDesc.RefreshRate.Numerator = 1;
-	swapChainDescription.BufferDesc.RefreshRate.Denominator = 60;
+	swapChainDescription.BufferDesc.RefreshRate.Numerator = 0;
+	swapChainDescription.BufferDesc.RefreshRate.Denominator = 1;
 	swapChainDescription.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	swapChainDescription.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	swapChainDescription.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 	swapChainDescription.SampleDesc.Count = 1;
 	swapChainDescription.SampleDesc.Quality = 0;
 	swapChainDescription.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	swapChainDescription.BufferCount = 1;
+	swapChainDescription.BufferCount = 2;
 	swapChainDescription.Windowed = TRUE;
-	swapChainDescription.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-	swapChainDescription.Flags = 0;
+	swapChainDescription.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+	swapChainDescription.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 
 	SDL_SysWMinfo sysWMinfo{};
 	SDL_GetVersion(&sysWMinfo.version);
