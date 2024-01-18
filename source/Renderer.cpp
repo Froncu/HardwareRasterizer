@@ -56,7 +56,7 @@ void Renderer::Render(const Matrix& cameraMatrix)
 
 void Renderer::ToggleFliteringType()
 {
-	const uint32_t 
+	const uint32_t
 		currentType{ static_cast<uint32_t>(m_FilteringType) },
 		typesCount{ static_cast<uint32_t>(Mesh::FilteringType::COUNT) },
 		nextType{ (currentType + 1) % typesCount };
@@ -95,7 +95,7 @@ void Renderer::ToggleFliteringType()
 #pragma region PrivateMethods
 void Renderer::ClearBuffers(const ColorRGB& color) const
 {
-	const FLOAT aColor[]{ static_cast<FLOAT>(color.red), static_cast<FLOAT>(color.green), static_cast<FLOAT>(color.blue), static_cast < FLOAT>(1.0f) };
+	const FLOAT aColor[]{ static_cast<FLOAT>(color.red), static_cast<FLOAT>(color.green), static_cast<FLOAT>(color.blue), static_cast<FLOAT>(1.0f) };
 	m_pDeviceContext->ClearRenderTargetView(m_pRenderTargetView, aColor);
 	m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
@@ -142,7 +142,7 @@ HRESULT Renderer::InitializeDirectX()
 	return result;
 }
 
-HRESULT Renderer::CreateDevice(ID3D11Device*& pDevice, ID3D11DeviceContext*& pDeviceContext)
+HRESULT Renderer::CreateDevice(ID3D11Device*& pDevice, ID3D11DeviceContext*& pDeviceContext) const
 {
 	const D3D_FEATURE_LEVEL featureLevel{ D3D_FEATURE_LEVEL_11_1 };
 	uint32_t createDeviceFlags{};
@@ -158,12 +158,12 @@ HRESULT Renderer::CreateDevice(ID3D11Device*& pDevice, ID3D11DeviceContext*& pDe
 	);
 }
 
-HRESULT Renderer::CreateFactory(IDXGIFactory1*& pDXGIFactory)
+HRESULT Renderer::CreateFactory(IDXGIFactory1*& pDXGIFactory) const
 {
 	return CreateDXGIFactory1(__uuidof(IDXGIFactory1), reinterpret_cast<void**>(&pDXGIFactory));
 }
 
-HRESULT Renderer::CreateSwapChain(SDL_Window* const pWindow, IDXGIFactory1* const pDXGIFactory, ID3D11Device* const pDevice, IDXGISwapChain*& pSwapChain)
+HRESULT Renderer::CreateSwapChain(SDL_Window* const pWindow, IDXGIFactory1* const pDXGIFactory, ID3D11Device* const pDevice, IDXGISwapChain*& pSwapChain) const
 {
 	DXGI_SWAP_CHAIN_DESC swapChainDescription{};
 	swapChainDescription.BufferDesc.Width = WINDOW_WIDTH;
@@ -188,7 +188,7 @@ HRESULT Renderer::CreateSwapChain(SDL_Window* const pWindow, IDXGIFactory1* cons
 	return pDXGIFactory->CreateSwapChain(pDevice, &swapChainDescription, &pSwapChain);
 }
 
-HRESULT Renderer::CreateDepthStencilBuffer(ID3D11Device* const pDevice, ID3D11Texture2D*& pDepthStencilBuffer)
+HRESULT Renderer::CreateDepthStencilBuffer(ID3D11Device* const pDevice, ID3D11Texture2D*& pDepthStencilBuffer) const
 {
 	D3D11_TEXTURE2D_DESC depthStencilDescription{};
 	depthStencilDescription.Width = WINDOW_WIDTH;
@@ -206,7 +206,7 @@ HRESULT Renderer::CreateDepthStencilBuffer(ID3D11Device* const pDevice, ID3D11Te
 	return pDevice->CreateTexture2D(&depthStencilDescription, nullptr, &pDepthStencilBuffer);
 }
 
-HRESULT Renderer::CreateDepthStencilView(ID3D11Device* const pDevice, ID3D11Texture2D* const pDepthStencilBuffer, ID3D11DepthStencilView*& pDepthStencilView)
+HRESULT Renderer::CreateDepthStencilView(ID3D11Device* const pDevice, ID3D11Texture2D* const pDepthStencilBuffer, ID3D11DepthStencilView*& pDepthStencilView) const
 {
 	D3D11_TEXTURE2D_DESC depthStencilDescription;
 	pDepthStencilBuffer->GetDesc(&depthStencilDescription);
@@ -219,22 +219,22 @@ HRESULT Renderer::CreateDepthStencilView(ID3D11Device* const pDevice, ID3D11Text
 	return pDevice->CreateDepthStencilView(pDepthStencilBuffer, &depthStencilViewDescription, &pDepthStencilView);
 }
 
-HRESULT Renderer::CreateRenderTargetBuffer(IDXGISwapChain* const pSwapChain, ID3D11Resource*& pRenderTargetBuffer)
+HRESULT Renderer::CreateRenderTargetBuffer(IDXGISwapChain* const pSwapChain, ID3D11Resource*& pRenderTargetBuffer) const
 {
 	return pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pRenderTargetBuffer));
 }
 
-HRESULT Renderer::CreateRenderTargetView(ID3D11Device* const pDevice, ID3D11Resource* const pRenderTargetBuffer, ID3D11RenderTargetView*& pRenderTargetView)
+HRESULT Renderer::CreateRenderTargetView(ID3D11Device* const pDevice, ID3D11Resource* const pRenderTargetBuffer, ID3D11RenderTargetView*& pRenderTargetView) const
 {
 	return pDevice->CreateRenderTargetView(pRenderTargetBuffer, nullptr, &pRenderTargetView);
 }
 
-void Renderer::BindAsActiveBuffers(ID3D11DeviceContext* const pDeviceContext, ID3D11DepthStencilView* const pDepthStencilView, ID3D11RenderTargetView*& pRenderTargetView)
+void Renderer::BindAsActiveBuffers(ID3D11DeviceContext* const pDeviceContext, ID3D11DepthStencilView* const pDepthStencilView, ID3D11RenderTargetView*& pRenderTargetView) const
 {
 	pDeviceContext->OMSetRenderTargets(1, &pRenderTargetView, pDepthStencilView);
 }
 
-void Renderer::SetViewPort(ID3D11DeviceContext* const pDeviceContext)
+void Renderer::SetViewPort(ID3D11DeviceContext* const pDeviceContext) const
 {
 	D3D11_VIEWPORT viewport{};
 	viewport.Width = static_cast<FLOAT>(WINDOW_WIDTH);
