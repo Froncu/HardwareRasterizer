@@ -10,10 +10,13 @@ SamplerState
 struct VS_Input
 {
     float3
-    position : POSITION,
-    color : COLOR;
+        position : POSITION,
+        color : COLOR;
     
     float2 UV : TEXCOORD;
+    float3
+        normal : NORMAL,
+        tangent : TANGENT;
 };
 
 struct VS_Output
@@ -22,16 +25,22 @@ struct VS_Output
     float3 color : COLOR;
     
     float2 UV : TEXCOORD;
+    float3
+        normal : NORMAL,
+        tangent : TANGENT;
 };
 
 VS_Output VS(VS_Input input)
 {
     VS_Output output;
+    
     output.position = mul(float4(input.position, 1.0f), gWorldViewProjection);
     output.color = input.color;
     
     output.UV = input.UV;
-   
+    output.normal = input.normal;
+    output.tangent = input.tangent;
+    
     return output;
 }
 

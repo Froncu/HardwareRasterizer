@@ -14,7 +14,7 @@ Mesh::~Mesh()
 	m_pInputLayout->Release();
 }
 
-Mesh::Mesh(ID3D11Device* const pDevice, const std::vector<VertexIn>& vVertices, const std::vector<uint32_t> vIndices) :
+Mesh::Mesh(ID3D11Device* const pDevice, const std::vector<Vertex>& vVertices, const std::vector<uint32_t> vIndices) :
 	m_Effect{ pDevice, L"Resources/PositionColor3D.fx" },
 	m_pEffectTechnique{ m_Effect->GetTechniqueByIndex(0) },
 
@@ -41,7 +41,7 @@ Mesh::Mesh(ID3D11Device* const pDevice, const std::string& OBJFilePath, bool fli
 	m_Scalar{ IDENTITY },
 	m_WorldMatrix{ IDENTITY }
 {
-	std::vector<VertexIn> vVertices{};
+	std::vector<Vertex> vVertices{};
 	std::vector<uint32_t> vIndices{};
 	ParseOBJ(OBJFilePath, flipAxisAndWinding, vVertices, vIndices);
 
@@ -66,7 +66,7 @@ void Mesh::Render(ID3D11DeviceContext* const pDeviceContext, const Matrix& viewP
 	pDeviceContext->IASetInputLayout(m_pInputLayout);
 
 	constexpr UINT
-		stride{ sizeof(VertexIn) },
+		stride{ sizeof(Vertex) },
 		offset{};
 	pDeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 
@@ -110,7 +110,7 @@ void Mesh::SetScalar(float scalar)
 #pragma region PrivateMethods
 HRESULT Mesh::CreateInputLayout(ID3DX11EffectTechnique* const pEffectTechnique, ID3D11Device* const pDevice, ID3D11InputLayout*& pInputLayout)
 {
-	static constexpr uint32_t NUMBER_OF_ELEMENTS{ 3 };
+	static constexpr uint32_t NUMBER_OF_ELEMENTS{ 5 };
 	D3D11_INPUT_ELEMENT_DESC aVertexDescription[NUMBER_OF_ELEMENTS]{};
 
 	aVertexDescription[0].SemanticName = "POSITION";
@@ -128,7 +128,17 @@ HRESULT Mesh::CreateInputLayout(ID3DX11EffectTechnique* const pEffectTechnique, 
 	aVertexDescription[2].AlignedByteOffset = 24;
 	aVertexDescription[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 
-	D3DX11_PASS_DESC passDescription{};
+	aVertexDescription[3].SemanticName = "NORMAL";
+	aVertexDescription[3].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	aVertexDescription[3].AlignedByteOffset = 32;
+	aVertexDescription[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+
+	aVertexDescription[4].SemanticName = "TANGENT";
+	aVertexDescription[4].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	aVertexDescription[4].AlignedByteOffset = 44;
+	aVertexDescription[4].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+
+	D3DX11_PASS_DESC passDescription;
 	pEffectTechnique->GetPassByIndex(0)->GetDesc(&passDescription);
 
 	return pDevice->CreateInputLayout
@@ -141,17 +151,17 @@ HRESULT Mesh::CreateInputLayout(ID3DX11EffectTechnique* const pEffectTechnique, 
 	);
 }
 
-HRESULT Mesh::CreateVertexBuffer(const std::vector<VertexIn>& vVerticesIn, ID3D11Device* const pDevice, ID3D11Buffer*& pVertexBuffer)
+HRESULT Mesh::CreateVertexBuffer(const std::vector<Vertex>& vVertices, ID3D11Device* const pDevice, ID3D11Buffer*& pVertexBuffer)
 {
 	D3D11_BUFFER_DESC bufferDescription{};
 	bufferDescription.Usage = D3D11_USAGE_IMMUTABLE;
-	bufferDescription.ByteWidth = sizeof(VertexIn) * static_cast<uint32_t>(vVerticesIn.size());
+	bufferDescription.ByteWidth = sizeof(Vertex) * static_cast<uint32_t>(vVertices.size());
 	bufferDescription.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bufferDescription.CPUAccessFlags = 0;
 	bufferDescription.MiscFlags = 0;
 
 	D3D11_SUBRESOURCE_DATA initialData{};
-	initialData.pSysMem = vVerticesIn.data();
+	initialData.pSysMem = vVertices.data();
 
 	return pDevice->CreateBuffer(&bufferDescription, &initialData, &pVertexBuffer);
 }
@@ -173,7 +183,7 @@ HRESULT Mesh::CreateIndexBuffer(const std::vector<uint32_t>& vIndices, ID3D11Dev
 	return pDevice->CreateBuffer(&bufferDescription, &initialData, &pIndexBuffer);
 }
 
-bool Mesh::ParseOBJ(const std::string& path, bool flipAxisAndWinding, std::vector<VertexIn>& vVertices, std::vector<uint32_t>& vIndices)
+bool Mesh::ParseOBJ(const std::string& path, bool flipAxisAndWinding, std::vector<Vertex>& vVertices, std::vector<uint32_t>& vIndices)
 {
 	std::ifstream file{ path };
 	if (!file)
@@ -215,7 +225,7 @@ bool Mesh::ParseOBJ(const std::string& path, bool flipAxisAndWinding, std::vecto
 
 			for (size_t faceIndex{}; faceIndex < 3; ++faceIndex)
 			{
-				VertexIn vertex{};
+				Vertex vertex{};
 
 				size_t positionIndex;
 				file >> positionIndex;
@@ -238,9 +248,9 @@ bool Mesh::ParseOBJ(const std::string& path, bool flipAxisAndWinding, std::vecto
 
 						size_t normalIndex;
 						file >> normalIndex;
-						//vertexIn.normal = vNormals[normalIndex - 1]; // OBJ format uses 1-based arrays, hence -1
+						vertex.normal = vNormals[normalIndex - 1]; // OBJ format uses 1-based arrays, hence -1
 
-						//vertexIn.normal.Normalize();
+						vertex.normal.Normalize();
 					}
 				}
 
@@ -264,53 +274,53 @@ bool Mesh::ParseOBJ(const std::string& path, bool flipAxisAndWinding, std::vecto
 		file.ignore(1000, '\n'); // Read till end of line and ignore all remaining chars
 	}
 
-	//// Cheap Tangent Calculation
-	//for (size_t index{}; index < vIndices.size(); index += 3)
-	//{
-	//	const size_t
-	//		index0{ vIndices[index] },
-	//		index1{ vIndices[index + 1] },
-	//		index2{ vIndices[index + 2] };
+	// Cheap Tangent Calculation
+	for (size_t index{}; index < vIndices.size(); index += 3)
+	{
+		const size_t
+			index0{ vIndices[index] },
+			index1{ vIndices[index + 1] },
+			index2{ vIndices[index + 2] };
 
-	//	const Vector2
-	//		& v0UV{ vVerticesIn[index0].UV },
-	//		& v1UV{ vVerticesIn[index1].UV },
-	//		& v2UV{ vVerticesIn[index2].UV };
+		const Vector2
+			& v0UV{ vVertices[index0].UV },
+			& v1UV{ vVertices[index1].UV },
+			& v2UV{ vVertices[index2].UV };
 
-	//	const Vector2
-	//		differenceX{ v1UV.x - v0UV.x, v2UV.x - v0UV.x },
-	//		differenceY{ v1UV.y - v0UV.y, v2UV.y - v0UV.y };
+		const Vector2
+			deltaX{ v1UV.x - v0UV.x, v2UV.x - v0UV.x },
+			deltaY{ v1UV.y - v0UV.y, v2UV.y - v0UV.y };
 
-	//	const float
-	//		cross{ Vector2::Cross(differenceX, differenceY) },
-	//		inversedCross{ cross ? (1.0f / cross) : 0.0f };
+		const float
+			cross{ Vector2::Cross(deltaX, deltaY) },
+			inversedCross{ cross ? (1.0f / cross) : 0.0f };
 
-	//	const Vector3
-	//		& v0Position{ vVerticesIn[index0].position },
-	//		& v1Position{ vVerticesIn[index1].position },
-	//		& v2Position{ vVerticesIn[index2].position },
+		const Vector3
+			& v0Position{ vVertices[index0].position },
+			& v1Position{ vVertices[index1].position },
+			& v2Position{ vVertices[index2].position },
 
-	//		edge0{ v1Position - v0Position },
-	//		edge1{ v2Position - v0Position },
-	//		tangent{ (edge0 * differenceY.y - edge1 * differenceY.x) * inversedCross };
+			edge0{ v1Position - v0Position },
+			edge1{ v2Position - v0Position },
+			tangent{ (edge0 * deltaY.y - edge1 * deltaY.x) * inversedCross };
 
-	//	vVerticesIn[index0].tangent += tangent;
-	//	vVerticesIn[index1].tangent += tangent;
-	//	vVerticesIn[index2].tangent += tangent;
-	//}
+		vVertices[index0].tangent += tangent;
+		vVertices[index1].tangent += tangent;
+		vVertices[index2].tangent += tangent;
+	}
 
-	//// Fix the tangents per vertex now because we accumulated
-	//for (VertexIn& vertexIn : vVerticesIn)
-	//{
-	//	vertexIn.tangent = Vector3::Reject(vertexIn.tangent, vertexIn.normal).GetNormalized();
+	// Fix the tangents per vertex now because we accumulated
+	for (Vertex& vertex : vVertices)
+	{
+		vertex.tangent = Vector3::Reject(vertex.tangent, vertex.normal).GetNormalized();
 
-	//	if (flipAxisAndWinding)
-	//	{
-	//		vertexIn.position.z *= -1.0f;
-	//		vertexIn.normal.z *= -1.0f;
-	//		vertexIn.tangent.z *= -1.0f;
-	//	}
-	//}
+		if (flipAxisAndWinding)
+		{
+			vertex.position.z *= -1.0f;
+			vertex.normal.z *= -1.0f;
+			vertex.tangent.z *= -1.0f;
+		}
+	}
 
 	return true;
 }

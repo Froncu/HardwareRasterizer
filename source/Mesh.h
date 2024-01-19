@@ -23,7 +23,7 @@ public:
 	Mesh& operator=(const Mesh&) = default;
 	Mesh& operator=(Mesh&&) noexcept = default;
 
-	Mesh(ID3D11Device* const pDevice, const std::vector<VertexIn>& vVertices, const std::vector<uint32_t> vIndices);
+	Mesh(ID3D11Device* const pDevice, const std::vector<Vertex>& vVertices, const std::vector<uint32_t> vIndices);
 	Mesh(ID3D11Device* const pDevice, const std::string& OBJFilePath, bool flipAxisAndWinding = false);
 
 	void Render(ID3D11DeviceContext* const pDeviceContext, const Matrix& viewProjectionMatrix) const;
@@ -35,10 +35,10 @@ public:
 
 private:
 	HRESULT CreateInputLayout(ID3DX11EffectTechnique* const pEffectTechnique, ID3D11Device* const pDevice, ID3D11InputLayout*& pInputLayout);
-	HRESULT CreateVertexBuffer(const std::vector<VertexIn>& vVerticesIn, ID3D11Device* const pDevice, ID3D11Buffer*& pVertexBuffer);
+	HRESULT CreateVertexBuffer(const std::vector<Vertex>& vVertices, ID3D11Device* const pDevice, ID3D11Buffer*& pVertexBuffer);
 	HRESULT CreateIndexBuffer(const std::vector<uint32_t>& vIndices, ID3D11Device* const pDevice, ID3D11Buffer*& pIndexBuffer, uint32_t& numberOfIndices);
 
-	bool ParseOBJ(const std::string& path, bool flipAxisAndWinding, std::vector<VertexIn>& vVerticesIn, std::vector<uint32_t>& vIndices);
+	bool ParseOBJ(const std::string& path, bool flipAxisAndWinding, std::vector<Vertex>& vVertices, std::vector<uint32_t>& vIndices);
 
 	Effect m_Effect;
 	ID3DX11EffectTechnique* m_pEffectTechnique;
