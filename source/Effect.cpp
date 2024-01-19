@@ -44,7 +44,7 @@ Effect::Effect(ID3D11Device* const pDevice, const std::wstring& effectPath) :
 		std::wcout << stringStream.str() << std::endl;
 	}
 	else
-		m_pDiffuseTexture = m_pEffect->GetVariableByName("gDiffuseTexture")->AsShaderResource();
+		m_pDiffuseTexture = m_pEffect->GetVariableByName("g_DiffuseTexture")->AsShaderResource();
 }
 
 Effect::~Effect()

@@ -7,15 +7,6 @@
 class Mesh final
 {
 public:
-	enum class FilteringType
-	{
-		point,
-		linear,
-		anisotropic,
-
-		COUNT
-	};
-
 	~Mesh();
 
 	Mesh(const Mesh& other) = default;
@@ -28,7 +19,8 @@ public:
 
 	void Render(ID3D11DeviceContext* const pDeviceContext, const Matrix& viewProjectionMatrix) const;
 
-	void SetFilteringType(FilteringType filteringType);
+	void ToggleFilteringType();
+
 	void SetTranslator(const Vector3& translator);
 	void SetRotorY(float yaw);
 	void SetScalar(float scalar);
@@ -40,8 +32,16 @@ private:
 
 	bool ParseOBJ(const std::string& path, bool flipAxisAndWinding, std::vector<Vertex>& vVertices, std::vector<uint32_t>& vIndices);
 
+	enum class FilteringType
+	{
+		point,
+		linear,
+		anisotropic,
+
+		COUNT
+	};
+
 	Effect m_Effect;
-	ID3DX11EffectTechnique* m_pEffectTechnique;
 
 	ID3DX11EffectVariable* m_pWorldViewProjectionMatrix;
 
@@ -59,4 +59,6 @@ private:
 		m_Scalar,
 		m_WorldMatrix,
 		m_ViewProjection;
+
+	FilteringType m_FilteringType;
 };

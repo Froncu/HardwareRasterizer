@@ -56,37 +56,7 @@ void Renderer::Render(const Matrix& cameraMatrix)
 
 void Renderer::ToggleFliteringType()
 {
-	const uint32_t
-		currentType{ static_cast<uint32_t>(m_FilteringType) },
-		typesCount{ static_cast<uint32_t>(Mesh::FilteringType::COUNT) },
-		nextType{ (currentType + 1) % typesCount };
-
-	m_FilteringType = static_cast<Mesh::FilteringType>(nextType);
-
-	m_Mesh.SetFilteringType(m_FilteringType);
-
-	std::string filteringType;
-	switch (m_FilteringType)
-	{
-	case Mesh::FilteringType::point:
-		filteringType = "Point";
-		break;
-
-	case Mesh::FilteringType::linear:
-		filteringType = "Linear";
-		break;
-
-	case Mesh::FilteringType::anisotropic:
-		filteringType = "Anisotropic";
-		break;
-	}
-
-	system("CLS");
-	std::cout
-		<< CONTROLS
-		<< "--------\n"
-		<< "FILTERING TYPE: " << filteringType << "\n"
-		<< "--------\n";
+	m_Mesh.ToggleFilteringType();
 }
 #pragma endregion PublicMethods
 

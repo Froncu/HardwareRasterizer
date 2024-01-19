@@ -50,5 +50,4 @@ private:
 	ID3D11RenderTargetView* m_pRenderTargetView;
 
 	Mesh m_Mesh;
-	Mesh::FilteringType m_FilteringType;
 };
