@@ -37,17 +37,17 @@ Renderer::~Renderer()
 #pragma region PublicMethods
 void Renderer::Update(const Timer& timer)
 {
-	m_Mesh.SetRotorY(90.0f * TO_RADIANS * timer.GetTotal());
+	m_Mesh.SetRotorY(45.0f * TO_RADIANS * timer.GetTotal());
 }
 
-void Renderer::Render(const Matrix& cameraMatrix)
+void Renderer::Render(const Camera& camera)
 {
 	if (!m_IsInitialized)
 		return;
 
 	ClearBuffers();
 
-	m_Mesh.Render(m_pDeviceContext, cameraMatrix);
+	m_Mesh.Render(m_pDeviceContext, camera);
 
 	m_pSwapChain->Present(0, DXGI_PRESENT_ALLOW_TEARING);
 

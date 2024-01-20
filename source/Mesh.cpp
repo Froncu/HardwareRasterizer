@@ -15,7 +15,7 @@ Mesh::~Mesh()
 }
 
 Mesh::Mesh(ID3D11Device* const pDevice, const std::vector<Vertex>& vVertices, const std::vector<uint32_t> vIndices) :
-	m_Effect{ pDevice, L"Resources/Effect.fx" },
+	m_Effect{ pDevice },
 
 	m_Translator{ IDENTITY },
 	m_Rotor{ IDENTITY },
@@ -29,10 +29,12 @@ Mesh::Mesh(ID3D11Device* const pDevice, const std::vector<Vertex>& vVertices, co
 	assert(SUCCEEDED(CreateIndexBuffer(vIndices, pDevice, m_pIndexBuffer, m_NumberOfIndices)));
 
 	m_Effect.SetDiffuseTexture(Texture(pDevice, "Resources/uv_grid_2.png"));
+
+	m_Effect.SetWorldMatrix(m_WorldMatrix);
 }
 
 Mesh::Mesh(ID3D11Device* const pDevice, const std::string& OBJFilePath, bool flipAxisAndWinding) :
-	m_Effect{ pDevice, L"Resources/Effect.fx" },
+	m_Effect{ pDevice },
 
 	m_Translator{ IDENTITY },
 	m_Rotor{ IDENTITY },
@@ -49,16 +51,22 @@ Mesh::Mesh(ID3D11Device* const pDevice, const std::string& OBJFilePath, bool fli
 
 	assert(SUCCEEDED(CreateIndexBuffer(vIndices, pDevice, m_pIndexBuffer, m_NumberOfIndices)));
 
+	m_Effect.SetWorldMatrix(m_WorldMatrix);
+
 	m_Effect.SetDiffuseTexture(Texture(pDevice, "Resources/vehicle_diffuse.png"));
+	m_Effect.SetNormalTexture(Texture(pDevice, "Resources/vehicle_normal.png"));
+	m_Effect.SetSpecularTexture(Texture(pDevice, "Resources/vehicle_specular.png"));
+	m_Effect.SetGlossinessTexture(Texture(pDevice, "Resources/vehicle_gloss.png"));
 }
 #pragma endregion Constructors/Destructor
 
 
 
 #pragma region PublicMethods
-void Mesh::Render(ID3D11DeviceContext* const pDeviceContext, const Matrix& viewProjectionMatrix) const
+void Mesh::Render(ID3D11DeviceContext* const pDeviceContext, const Camera& camera) const
 {
-	m_Effect->GetVariableByName("g_WorldViewProjection")->AsMatrix()->SetMatrix(Matrix(m_WorldMatrix * viewProjectionMatrix).GetDataPointer());
+	m_Effect.SetViewProjectionMatrix(camera.GetCameraMatrix());
+	m_Effect.SetCameraOrigin(camera.GetOrigin());
 
 	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	pDeviceContext->IASetInputLayout(m_pInputLayout);
@@ -66,8 +74,8 @@ void Mesh::Render(ID3D11DeviceContext* const pDeviceContext, const Matrix& viewP
 	constexpr UINT
 		stride{ sizeof(Vertex) },
 		offset{};
-	pDeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 
+	pDeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 	pDeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	ID3DX11EffectTechnique* const pEffectTechnique{ m_Effect->GetTechniqueByIndex(0) };
@@ -75,7 +83,7 @@ void Mesh::Render(ID3D11DeviceContext* const pDeviceContext, const Matrix& viewP
 	D3DX11_TECHNIQUE_DESC techniqueDescription;
 	pEffectTechnique->GetDesc(&techniqueDescription);
 
-	for (UINT pass{}; pass < techniqueDescription.Passes; ++pass)
+	for (uint32_t pass{}; pass < techniqueDescription.Passes; ++pass)
 	{
 		pEffectTechnique->GetPassByIndex(pass)->Apply(0, pDeviceContext);
 		pDeviceContext->DrawIndexed(m_NumberOfIndices, 0, 0);
@@ -127,18 +135,24 @@ void Mesh::SetTranslator(const Vector3& translator)
 {
 	m_Translator = Matrix::CreateTranslator(translator);
 	m_WorldMatrix = m_Scalar * m_Rotor * m_Translator;
+
+	m_Effect.SetWorldMatrix(m_WorldMatrix);
 }
 
 void Mesh::SetRotorY(float yaw)
 {
 	m_Rotor = Matrix::CreateRotorY(yaw);
 	m_WorldMatrix = m_Scalar * m_Rotor * m_Translator;
+
+	m_Effect.SetWorldMatrix(m_WorldMatrix);
 }
 
 void Mesh::SetScalar(float scalar)
 {
 	m_Scalar = Matrix::CreateScalar(scalar);
 	m_WorldMatrix = m_Scalar * m_Rotor * m_Translator;
+
+	m_Effect.SetWorldMatrix(m_WorldMatrix);
 }
 #pragma endregion PublicMethods
 

@@ -1,8 +1,9 @@
 #pragma once
 
 #include "Vertex.hpp"
-#include "Matrix.h"
+#include "Camera.h"
 #include "Effect.h"
+#include "Matrix.h"
 
 class Mesh final
 {
@@ -15,9 +16,9 @@ public:
 	Mesh& operator=(Mesh&&) noexcept = default;
 
 	Mesh(ID3D11Device* const pDevice, const std::vector<Vertex>& vVertices, const std::vector<uint32_t> vIndices);
-	Mesh(ID3D11Device* const pDevice, const std::string& OBJFilePath, bool flipAxisAndWinding = false);
+	Mesh(ID3D11Device* const pDevice, const std::string& OBJFilePath, bool flipAxisAndWinding = true);
 
-	void Render(ID3D11DeviceContext* const pDeviceContext, const Matrix& viewProjectionMatrix) const;
+	void Render(ID3D11DeviceContext* const pDeviceContext, const Camera& camera) const;
 
 	void ToggleFilteringType();
 

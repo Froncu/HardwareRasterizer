@@ -61,7 +61,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* args[])
 
 		camera.Update(timer);
 		renderer.Update(timer);
-		renderer.Render(camera.GetCameraMatrix());
+		renderer.Render(camera);
 
 		timer.Update();
 		printTimer += timer.GetElapsed();
