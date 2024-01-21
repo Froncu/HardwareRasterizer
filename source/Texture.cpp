@@ -11,9 +11,13 @@
 #pragma region Constructors/Destructor
 Texture::Texture(ID3D11Device* const pDevice, const std::string& path)
 {
-	assert(SUCCEEDED(CreateTexture2D(pDevice, path, m_pResource)));
+	HRESULT result;
 
-	assert(SUCCEEDED(CreateShaderResourceView(pDevice, m_pResource, m_pShaderResourceView)));
+	result = CreateTexture2D(pDevice, path, m_pResource);
+	assert(SUCCEEDED(result));
+
+	result = CreateShaderResourceView(pDevice, m_pResource, m_pShaderResourceView);
+	assert(SUCCEEDED(result));
 }
 
 Texture::~Texture()

@@ -6,7 +6,8 @@
 #pragma region Constructors/Destructor
 Effect::Effect(ID3D11Device* const pDevice, const std::string& effectPath)
 {
-	assert(SUCCEEDED(CompileEffect(pDevice, effectPath, m_pEffect)));
+	const HRESULT result{ CompileEffect(pDevice, effectPath, m_pEffect) };
+	assert(SUCCEEDED(result));
 }
 
 Effect::~Effect()

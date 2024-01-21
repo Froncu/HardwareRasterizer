@@ -8,8 +8,8 @@ class DefaultEffect;
 class Mesh final
 {
 public:
-	Mesh(DefaultEffect* const pEffect, ID3D11Device* const pDevice, const std::vector<Vertex>& vVertices, const std::vector<uint32_t> vIndices);
-	Mesh(DefaultEffect* const pEffect, ID3D11Device* const pDevice, const std::string& OBJFilePath, bool flipAxisAndWinding = true);
+	Mesh(const DefaultEffect* const pEffect, ID3D11Device* const pDevice, const std::vector<Vertex>& vVertices, const std::vector<uint32_t> vIndices);
+	Mesh(const DefaultEffect* const pEffect, ID3D11Device* const pDevice, const std::string& OBJFilePath, bool flipAxisAndWinding = true);
 
 	Mesh(const Mesh& other);
 	Mesh(Mesh&& other) noexcept = delete;
@@ -31,7 +31,7 @@ private:
 
 	bool ParseOBJ(const std::string& path, bool flipAxisAndWinding, std::vector<Vertex>& vVertices, std::vector<uint32_t>& vIndices);
 
-	DefaultEffect* m_pEffect;
+	const DefaultEffect* m_pEffect;
 	
 	ID3D11InputLayout* m_pInputLayout;
 	ID3D11Buffer* m_pVertexBuffer;

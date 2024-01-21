@@ -7,7 +7,7 @@
 class DefaultEffect : public Effect
 {
 public:
-	DefaultEffect(ID3D11Device* const pDevice, const std::string& effectPath = "Resources/Default/DefaultEffect.fx");
+	DefaultEffect(ID3D11Device* const pDevice, const std::string& effectPath);
 
 	DefaultEffect(const DefaultEffect&) = delete;
 	DefaultEffect(DefaultEffect&&) noexcept = delete;

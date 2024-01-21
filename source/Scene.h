@@ -35,13 +35,9 @@ private:
 
 	Camera m_Camera;
 
-	Texture m_VehicleDiffuse;
-	Texture m_VehicleNormal;
-	Texture m_VehicleSpecular;
-	Texture m_VehicleGloss;
-	Texture m_FireDiffuse;
-
 	VehicleEffect m_VehicleEffect;
 	FireEffect m_FireEffect;
-	std::vector<Mesh> m_vMeshes;
+
+	Mesh m_VehicleMesh;
+	Mesh m_FireMesh;
 };

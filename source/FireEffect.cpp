@@ -3,7 +3,7 @@
 
 #pragma region Constructors/Destructor
 FireEffect::FireEffect(ID3D11Device* const pDevice) :
-	DefaultEffect(pDevice, "Resources/Fire/FireEffect.fx")
+	DefaultEffect(pDevice, "Resources/Fire.fx")
 {
 }
 #pragma endregion Constructors/Destructor

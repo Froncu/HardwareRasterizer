@@ -7,7 +7,7 @@
 #include <fstream>
 
 #pragma region Constructors/Destructor
-Mesh::Mesh(DefaultEffect* const pEffect, ID3D11Device* const pDevice, const std::vector<Vertex>& vVertices, const std::vector<uint32_t> vIndices) :
+Mesh::Mesh(const DefaultEffect* const pEffect, ID3D11Device* const pDevice, const std::vector<Vertex>& vVertices, const std::vector<uint32_t> vIndices) :
 	m_pEffect{ pEffect },
 
 	m_Translator{ IDENTITY },
@@ -15,14 +15,19 @@ Mesh::Mesh(DefaultEffect* const pEffect, ID3D11Device* const pDevice, const std:
 	m_Scalar{ IDENTITY },
 	m_WorldMatrix{ m_Scalar * m_Rotor * m_Translator }
 {
-	assert(SUCCEEDED(CreateInputLayout(m_pEffect->GetDefaultTechnique(), pDevice, m_pInputLayout)));
+	HRESULT result;
 
-	assert(SUCCEEDED(CreateVertexBuffer(vVertices, pDevice, m_pVertexBuffer)));
+	result = CreateInputLayout(m_pEffect->GetDefaultTechnique(), pDevice, m_pInputLayout);
+	assert(SUCCEEDED(result));
 
-	assert(SUCCEEDED(CreateIndexBuffer(vIndices, pDevice, m_pIndexBuffer, m_NumberOfIndices)));
+	result = CreateVertexBuffer(vVertices, pDevice, m_pVertexBuffer);
+	assert(SUCCEEDED(result));
+
+	result = CreateIndexBuffer(vIndices, pDevice, m_pIndexBuffer, m_NumberOfIndices);
+	assert(SUCCEEDED(result));
 }
 
-Mesh::Mesh(DefaultEffect* const pEffect, ID3D11Device* const pDevice, const std::string& OBJFilePath, bool flipAxisAndWinding) :
+Mesh::Mesh(const DefaultEffect* const pEffect, ID3D11Device* const pDevice, const std::string& OBJFilePath, bool flipAxisAndWinding) :
 	m_pEffect{ pEffect },
 
 	m_Translator{ IDENTITY },
@@ -34,11 +39,16 @@ Mesh::Mesh(DefaultEffect* const pEffect, ID3D11Device* const pDevice, const std:
 	std::vector<uint32_t> vIndices{};
 	ParseOBJ(OBJFilePath, flipAxisAndWinding, vVertices, vIndices);
 
-	assert(SUCCEEDED(CreateInputLayout(m_pEffect->GetDefaultTechnique(), pDevice, m_pInputLayout)));
+	HRESULT result;
 
-	assert(SUCCEEDED(CreateVertexBuffer(vVertices, pDevice, m_pVertexBuffer)));
+	result = CreateInputLayout(m_pEffect->GetDefaultTechnique(), pDevice, m_pInputLayout);
+	assert(SUCCEEDED(result));
 
-	assert(SUCCEEDED(CreateIndexBuffer(vIndices, pDevice, m_pIndexBuffer, m_NumberOfIndices)));
+	result = CreateVertexBuffer(vVertices, pDevice, m_pVertexBuffer);
+	assert(SUCCEEDED(result));
+
+	result = CreateIndexBuffer(vIndices, pDevice, m_pIndexBuffer, m_NumberOfIndices);
+	assert(SUCCEEDED(result));
 }
 
 Mesh::Mesh(const Mesh& other) :

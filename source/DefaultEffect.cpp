@@ -9,7 +9,6 @@
 DefaultEffect::DefaultEffect(ID3D11Device* const pDevice, const std::string& effectPath) :
 	Effect(pDevice, effectPath)
 {
-	SetDiffuseTexture(Texture(pDevice, "Resources/Default/DefaultDiffuse.png"));
 }
 #pragma endregion Constructors/Destructor
 
@@ -18,22 +17,26 @@ DefaultEffect::DefaultEffect(ID3D11Device* const pDevice, const std::string& eff
 #pragma region PublicMethods
 void DefaultEffect::SetWorldMatrix(const Matrix& matrix) const
 {
-	m_pEffect->GetVariableByName("g_WorldMatrix")->AsMatrix()->SetMatrix(matrix.GetDataPointer());
+	const HRESULT result{ m_pEffect->GetVariableByName("g_WorldMatrix")->AsMatrix()->SetMatrix(matrix.GetDataPointer()) };
+	assert(SUCCEEDED(result));
 }
 
 void DefaultEffect::SetViewProjectionMatrix(const Matrix& matrix) const
 {
-	m_pEffect->GetVariableByName("g_ViewProjectionMatrix")->AsMatrix()->SetMatrix(matrix.GetDataPointer());
+	const HRESULT result{ m_pEffect->GetVariableByName("g_ViewProjectionMatrix")->AsMatrix()->SetMatrix(matrix.GetDataPointer()) };
+	assert(SUCCEEDED(result));
 }
 
 void DefaultEffect::SetDiffuseTexture(const Texture& texture) const
 {
-	m_pEffect->GetVariableByName("g_DiffuseTexture")->AsShaderResource()->SetResource(texture.GetShaderResourceView());
+	const HRESULT result{ m_pEffect->GetVariableByName("g_DiffuseTexture")->AsShaderResource()->SetResource(texture.GetShaderResourceView()) };
+	assert(SUCCEEDED(result));
 }
 
 void DefaultEffect::SetLightDirection(const Vector3& direction)
 {
-	m_pEffect->GetVariableByName("g_LightDirection")->AsVector()->SetFloatVector(&direction.x);
+	const HRESULT result{ m_pEffect->GetVariableByName("g_LightDirection")->AsVector()->SetFloatVector(&direction.x) };
+	assert(SUCCEEDED(result));
 }
 
 ID3DX11EffectTechnique* const DefaultEffect::GetDefaultTechnique() const

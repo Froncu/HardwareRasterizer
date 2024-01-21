@@ -8,7 +8,7 @@
 
 #pragma region Constructors/Destructor
 VehicleEffect::VehicleEffect(ID3D11Device* const pDevice) :
-	DefaultEffect(pDevice, "Resources/Vehicle/VehicleEffect.fx"),
+	DefaultEffect(pDevice, "Resources/Vehicle.fx"),
 
 	m_FilteringType{ FilteringType::point }
 {
@@ -20,22 +20,26 @@ VehicleEffect::VehicleEffect(ID3D11Device* const pDevice) :
 #pragma region PublicMethods
 void VehicleEffect::SetCameraOrigin(const Vector3& position) const
 {
-	m_pEffect->GetVariableByName("g_CameraOrigin")->AsVector()->SetFloatVector(&position.x);
+	const HRESULT result{ m_pEffect->GetVariableByName("g_CameraOrigin")->AsVector()->SetFloatVector(&position.x) };
+	assert(SUCCEEDED(result));
 }
 
 void VehicleEffect::SetNormalTexture(const Texture& texture) const
 {
-	m_pEffect->GetVariableByName("g_NormalTexture")->AsShaderResource()->SetResource(texture.GetShaderResourceView());
+	const HRESULT result{ m_pEffect->GetVariableByName("g_NormalTexture")->AsShaderResource()->SetResource(texture.GetShaderResourceView()) };
+	assert(SUCCEEDED(result));
 }
 
 void VehicleEffect::SetSpecularTexture(const Texture& texture) const
 {
-	m_pEffect->GetVariableByName("g_SpecularTexture")->AsShaderResource()->SetResource(texture.GetShaderResourceView());
+	const HRESULT result{ m_pEffect->GetVariableByName("g_SpecularTexture")->AsShaderResource()->SetResource(texture.GetShaderResourceView()) };
+	assert(SUCCEEDED(result));
 }
 
 void VehicleEffect::SetGlossTexture(const Texture& texture) const
 {
-	m_pEffect->GetVariableByName("g_GlossTexture")->AsShaderResource()->SetResource(texture.GetShaderResourceView());
+	const HRESULT result{ m_pEffect->GetVariableByName("g_GlossTexture")->AsShaderResource()->SetResource(texture.GetShaderResourceView()) };
+	assert(SUCCEEDED(result));
 }
 
 void VehicleEffect::ToggleFilteringType()
@@ -71,8 +75,15 @@ void VehicleEffect::SetFilteringType(FilteringType filteringType)
 	}
 
 	ID3D11SamplerState* pSamplerState;
-	m_pEffect->GetVariableByName(variableName.c_str())->AsSampler()->GetSampler(NULL, &pSamplerState);
-	m_pEffect->GetVariableByName("g_ActiveSamplerState")->AsSampler()->SetSampler(NULL, pSamplerState);
+
+	HRESULT result;
+
+	result = m_pEffect->GetVariableByName(variableName.c_str())->AsSampler()->GetSampler(NULL, &pSamplerState);
+	assert(SUCCEEDED(result));
+
+	result = m_pEffect->GetVariableByName("g_ActiveSamplerState")->AsSampler()->SetSampler(NULL, pSamplerState);
+	assert(SUCCEEDED(result));
+
 	pSamplerState->Release();
 
 	system("CLS");
@@ -85,9 +96,14 @@ void VehicleEffect::SetFilteringType(FilteringType filteringType)
 
 void VehicleEffect::ToggleUseNormalTexture()
 {
+	HRESULT result;
+
 	bool useNormalTexture;
-	m_pEffect->GetVariableByName("g_UseNormalTexture")->AsScalar()->GetBool(&useNormalTexture);
-	m_pEffect->GetVariableByName("g_UseNormalTexture")->AsScalar()->SetBool(!useNormalTexture);
+	result = m_pEffect->GetVariableByName("g_UseNormalTexture")->AsScalar()->GetBool(&useNormalTexture);
+	assert(SUCCEEDED(result));
+
+	result = m_pEffect->GetVariableByName("g_UseNormalTexture")->AsScalar()->SetBool(!useNormalTexture);
+	assert(SUCCEEDED(result));
 
 	system("CLS");
 	std::cout

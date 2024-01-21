@@ -11,26 +11,18 @@ Scene::Scene(ID3D11Device* const pDevice) :
 
 	m_Camera{ {0.0f, 0.0f, -50.0f} },
 
-	m_VehicleDiffuse{ pDevice, "Resources/Vehicle/VehicleDiffuse.png" },
-	m_VehicleNormal{ pDevice, "Resources/Vehicle/VehicleNormal.png" },
-	m_VehicleSpecular{ pDevice, "Resources/Vehicle/VehicleSpecular.png" },
-	m_VehicleGloss{ pDevice, "Resources/Vehicle/VehicleGloss.png" },
-	m_FireDiffuse{ pDevice, "Resources/Fire/FireDiffuse.png" },
-
 	m_VehicleEffect{ pDevice },
 	m_FireEffect{ pDevice },
-	m_vMeshes
-	{
-		{ &m_VehicleEffect, pDevice, "Resources/Vehicle/Vehicle.obj" },
-		{ &m_FireEffect, pDevice, "Resources/Fire/Fire.obj" }
-	}
-{
-	m_VehicleEffect.SetDiffuseTexture(m_VehicleDiffuse);
-	m_VehicleEffect.SetNormalTexture(m_VehicleNormal);
-	m_VehicleEffect.SetSpecularTexture(m_VehicleSpecular);
-	m_VehicleEffect.SetGlossTexture(m_VehicleGloss);
 
-	m_FireEffect.SetDiffuseTexture(m_FireDiffuse);
+	m_VehicleMesh{ &m_VehicleEffect, pDevice, "Resources/vehicle.obj" },
+	m_FireMesh{ &m_FireEffect, pDevice, "Resources/fireFX.obj" }
+{
+	m_VehicleEffect.SetDiffuseTexture({ pDevice, "Resources/vehicle_diffuse.png" });
+	m_VehicleEffect.SetNormalTexture({ pDevice, "Resources/vehicle_normal.png" });
+	m_VehicleEffect.SetSpecularTexture({ pDevice, "Resources/vehicle_specular.png" });
+	m_VehicleEffect.SetGlossTexture({ pDevice, "Resources/vehicle_gloss.png" });
+
+	m_FireEffect.SetDiffuseTexture({ pDevice, "Resources/fireFX_diffuse.png" });
 }
 #pragma endregion Constructors/Destructor
 
@@ -44,18 +36,21 @@ void Scene::Update(const Timer& timer)
 	m_VehicleEffect.SetCameraOrigin(m_Camera.GetOrigin());
 
 	if (m_RotateMeshes)
-		for (Mesh& mesh : m_vMeshes)
-			mesh.SetRotorY(TO_RADIANS * 45.0f * (timer.GetTotal() - m_NotRotatingElapsedSeconds));
+	{
+		const float yaw{ TO_RADIANS * 45.0f * (timer.GetTotal() - m_NotRotatingElapsedSeconds) };
+		m_VehicleMesh.SetRotorY(yaw);
+		m_FireMesh.SetRotorY(yaw);
+	}
 	else
 		m_NotRotatingElapsedSeconds += timer.GetElapsed();
 }
 
 void Scene::Render(ID3D11DeviceContext* const pDeviceContext) const
 {
-	m_vMeshes.front().Render(pDeviceContext, m_Camera.GetViewProjectionMatrix());
+	m_VehicleMesh.Render(pDeviceContext, m_Camera.GetViewProjectionMatrix());
 
 	if (m_RenderFire)
-		m_vMeshes.back().Render(pDeviceContext, m_Camera.GetViewProjectionMatrix());;
+		m_FireMesh.Render(pDeviceContext, m_Camera.GetViewProjectionMatrix());;
 }
 
 void Scene::ToggleFilteringType()
