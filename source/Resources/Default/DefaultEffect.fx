@@ -3,6 +3,8 @@ float4x4 g_ViewProjectionMatrix;
 
 float3 g_LightDirection = float3(0.577f, -0.577f, 0.577f);
  
+Texture2D g_DiffuseTexture;
+
 SamplerState g_SamplerState
 {
     Filter = ANISOTROPIC;
@@ -10,7 +12,15 @@ SamplerState g_SamplerState
     AddressV = Wrap;
 };
 
-Texture2D g_DiffuseTexture;
+RasterizerState g_RasterizerState
+{
+
+};
+
+BlendState g_BlendState
+{
+
+};
 
 
 
@@ -67,6 +77,8 @@ technique11 DefaultTechnique
 {
     pass DefaultPass
     {
+        SetRasterizerState(g_RasterizerState);
+        SetBlendState(g_BlendState, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xFFFFFFFF);
         SetVertexShader(CompileShader(vs_5_0, DefaultVertexShader()));
         SetGeometryShader(NULL);
         SetPixelShader(CompileShader(ps_5_0, DefaultPixelShader()));

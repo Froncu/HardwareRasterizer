@@ -37,6 +37,16 @@ SamplerState g_ActiveSamplerState
     AddressV = Wrap;
 };
 
+RasterizerState g_RasterizerState
+{
+
+};
+
+BlendState g_BlendState
+{
+
+};
+
 
 
 struct VertexShaderInput
@@ -78,7 +88,7 @@ PixelShaderInput MyVertexShader(VertexShaderInput input)
 
 float3 GetSampledNormal(float2 UV, float3 normal, float3 tangent, Texture2D normalTexture)
 {
-    float3 sampledNormal = normalTexture.Sample(g_ActiveSamplerState, UV).xyz * 2.0f - float3(1.0f, 1.0f, 1.0f);
+    float3 sampledNormal = normalTexture.Sample(g_ActiveSamplerState, UV).xyz * 2.0f - 1.0f;
     float3 binormal = normalize(cross(normal, tangent));
     
     return normalize(mul(sampledNormal, float3x3(tangent, binormal, normal)));
@@ -124,6 +134,8 @@ technique11 DefaultTechnique
 {
     pass DefaultPass
     {
+        SetRasterizerState(g_RasterizerState);
+        SetBlendState(g_BlendState, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xFFFFFFFF);
         SetVertexShader(CompileShader(vs_5_0, MyVertexShader()));
         SetGeometryShader(NULL);
         SetPixelShader(CompileShader(ps_5_0, MyPixelShader()));
