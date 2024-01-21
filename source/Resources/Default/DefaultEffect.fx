@@ -7,12 +7,15 @@ Texture2D g_DiffuseTexture;
 
 SamplerState g_SamplerState
 {
-    Filter = ANISOTROPIC;
-    AddressU = Wrap;
-    AddressV = Wrap;
+
 };
 
 RasterizerState g_RasterizerState
+{
+
+};
+
+DepthStencilState g_DepthStencilState
 {
 
 };
@@ -78,6 +81,7 @@ technique11 DefaultTechnique
     pass DefaultPass
     {
         SetRasterizerState(g_RasterizerState);
+        SetDepthStencilState(g_DepthStencilState, 0);
         SetBlendState(g_BlendState, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xFFFFFFFF);
         SetVertexShader(CompileShader(vs_5_0, DefaultVertexShader()));
         SetGeometryShader(NULL);
