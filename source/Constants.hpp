@@ -9,7 +9,10 @@ constexpr char CONTROLS[]
 {
 	"--------\n"
 	"CONTROLS:\n"
-	"F2: Toggle Filtering Methods\n"
+	"F4: Toggle Filtering Mode\n"
+	"F5: Toggle Rotation\n"
+	"F6: Toggle Using Normal Texture\n"
+	"F7: Toggle Fire Rendering\n"
 	"SCROLL: In-/decrement FOV angle\n"
 	// ...
 };

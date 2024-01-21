@@ -38,3 +38,4 @@ static constexpr ColorRGB WHITE{ 1.0f, 1.0f, 1.0f };
 static constexpr ColorRGB BLACK{ 0.0f, 0.0f, 0.0f };
 static constexpr ColorRGB GRAY{ 0.5f, 0.5f, 0.5f };
 static constexpr ColorRGB DARK_GRAY{ 0.25f, 0.25f, 0.25f };
+static constexpr ColorRGB CORNFLOWER_BLUE{ 0.39f, 0.59f, 0.93f };

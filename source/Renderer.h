@@ -22,7 +22,7 @@ public:
 	ID3D11Device* const GetDevice() const;
 
 private:
-	void ClearBuffers(ID3D11DeviceContext* const pDeviceContext, const ColorRGB& color = DARK_GRAY) const;
+	void ClearBuffers(ID3D11DeviceContext* const pDeviceContext, const ColorRGB& color = CORNFLOWER_BLUE) const;
 
 	HRESULT CreateDevice(ID3D11Device*& pDevice, ID3D11DeviceContext*& pDeviceContext) const;
 	HRESULT CreateFactory(IDXGIFactory1*& pDXGIFactory) const;

@@ -20,11 +20,19 @@ public:
 
 	void Update(const Timer& timer);
 	void Render(ID3D11DeviceContext* const pDeviceContext) const;
+
 	void ToggleFilteringType();
+	void ToggleRotation();
+	void ToggleNormalMapping();
+	void ToggleFireRendering();
 
 	Camera& GetCamera();
 
 private:
+	bool m_RotateMeshes;
+	float m_NotRotatingElapsedSeconds;
+	bool m_RenderFire;
+
 	Camera m_Camera;
 
 	Texture m_VehicleDiffuse;

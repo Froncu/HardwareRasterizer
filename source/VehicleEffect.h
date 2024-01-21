@@ -32,6 +32,8 @@ public:
 	void ToggleFilteringType();
 	void SetFilteringType(FilteringType filteringType);
 
+	void ToggleUseNormalTexture();
+
 private:
 	FilteringType m_FilteringType;
 };

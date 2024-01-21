@@ -34,7 +34,7 @@ Camera::Camera(const Vector3& origin, float fieldOfViewAngle) :
 #pragma region PublicMethods
 void Camera::Update(const Timer& timer)
 {
-	static constexpr float MOVEMENT_SPEED{ 15.0f };
+	static constexpr float BASE_MOVEMENT_SPEED{ 15.0f };
 	static constexpr float MOUSE_SENSITIVITY{ 0.25f };
 	static constexpr float MAX_TOTAL_PITCH{ TO_RADIANS * 90.0f - FLT_EPSILON };
 	static constexpr float DEFAULT_FIELD_OF_VIEW_ANGLE{ TO_RADIANS * 45.0f };
@@ -43,6 +43,40 @@ void Camera::Update(const Timer& timer)
 	const float deltaTime{ timer.GetElapsed() };
 	const float fieldOfViewScalar{ std::min(m_FieldOfViewAngle / DEFAULT_FIELD_OF_VIEW_ANGLE, 1.0f) };
 
+	float movementSpeed{ BASE_MOVEMENT_SPEED };
+
+	//	Keyboard Input
+	const uint8_t* pKeyboardState{ SDL_GetKeyboardState(nullptr) };
+
+	if (pKeyboardState[SDL_SCANCODE_LSHIFT])
+	{
+		movementSpeed *= 3;
+	}
+
+	if (pKeyboardState[SDL_SCANCODE_W])
+	{
+		m_Origin += m_ForwardDirection * deltaTime * movementSpeed;
+		UpdateViewMatrix();
+	}
+
+	if (pKeyboardState[SDL_SCANCODE_S])
+	{
+		m_Origin -= m_ForwardDirection * deltaTime * movementSpeed;
+		UpdateViewMatrix();
+	}
+
+	if (pKeyboardState[SDL_SCANCODE_A])
+	{
+		m_Origin -= m_RightDirection * deltaTime * movementSpeed;
+		UpdateViewMatrix();
+	}
+
+	if (pKeyboardState[SDL_SCANCODE_D])
+	{
+		m_Origin += m_RightDirection * deltaTime * movementSpeed;
+		UpdateViewMatrix();
+	}
+
 	//	Mouse Input
 	int mouseX, mouseY;
 	const uint32_t mouseState{ SDL_GetRelativeMouseState(&mouseX, &mouseY) };
@@ -50,7 +84,7 @@ void Camera::Update(const Timer& timer)
 	switch (mouseState)
 	{
 	case SDL_BUTTON(1):
-		m_Origin -= m_ForwardDirection * MOVEMENT_SPEED * float(mouseY) * MOUSE_SENSITIVITY * MOUSE_MOVEMENT_ORIGIN_CORRECTOR;
+		m_Origin -= m_ForwardDirection * BASE_MOVEMENT_SPEED * float(mouseY) * MOUSE_SENSITIVITY * MOUSE_MOVEMENT_ORIGIN_CORRECTOR;
 		m_TotalYaw += TO_RADIANS * fieldOfViewScalar * mouseX * MOUSE_SENSITIVITY;
 		UpdateViewMatrix();
 		break;
@@ -63,36 +97,9 @@ void Camera::Update(const Timer& timer)
 		break;
 
 	case SDL_BUTTON_X2:
-		m_Origin -= m_UpDirection * MOVEMENT_SPEED * float(mouseY) * MOUSE_SENSITIVITY * MOUSE_MOVEMENT_ORIGIN_CORRECTOR;
+		m_Origin -= m_UpDirection * BASE_MOVEMENT_SPEED * float(mouseY) * MOUSE_SENSITIVITY * MOUSE_MOVEMENT_ORIGIN_CORRECTOR;
 		UpdateViewMatrix();
 		break;
-	}
-
-	//	Keyboard Input
-	const uint8_t* pKeyboardState{ SDL_GetKeyboardState(nullptr) };
-
-	if (pKeyboardState[SDL_SCANCODE_W] || pKeyboardState[SDL_SCANCODE_UP])
-	{
-		m_Origin += m_ForwardDirection * deltaTime * MOVEMENT_SPEED;
-		UpdateViewMatrix();
-	}
-
-	if (pKeyboardState[SDL_SCANCODE_S] || pKeyboardState[SDL_SCANCODE_DOWN])
-	{
-		m_Origin -= m_ForwardDirection * deltaTime * MOVEMENT_SPEED;
-		UpdateViewMatrix();
-	}
-
-	if (pKeyboardState[SDL_SCANCODE_A] || pKeyboardState[SDL_SCANCODE_LEFT])
-	{
-		m_Origin -= m_RightDirection * deltaTime * MOVEMENT_SPEED;
-		UpdateViewMatrix();
-	}
-
-	if (pKeyboardState[SDL_SCANCODE_D] || pKeyboardState[SDL_SCANCODE_RIGHT])
-	{
-		m_Origin += m_RightDirection * deltaTime * MOVEMENT_SPEED;
-		UpdateViewMatrix();
 	}
 }
 #pragma endregion PublicMethods
@@ -182,7 +189,7 @@ void Camera::UpdateViewMatrix()
 void Camera::UpdateProjectionMatrix()
 {
 	static constexpr float NEAR_PLANE{ 0.1f };
-	static constexpr float FAR_PLANE{ 100.0f };
+	static constexpr float FAR_PLANE{ 1000.0f };
 	static constexpr float DELTA_NEAR_FAR_PLANE{ FAR_PLANE - NEAR_PLANE };
 
 	static const Vector4 Z_AXIS{ 0.0f, 0.0f, FAR_PLANE / DELTA_NEAR_FAR_PLANE, 1.0f };

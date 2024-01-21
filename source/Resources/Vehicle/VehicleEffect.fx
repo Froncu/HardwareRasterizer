@@ -7,6 +7,8 @@ float3 g_LightDirection = float3(0.577f, -0.577f, 0.577f);
 float g_DiffuseReflectance = 7.0f;
 float g_Shininess = 25.0f;
 
+bool g_UseNormalTexture = true;
+
 Texture2D g_DiffuseTexture;
 Texture2D g_NormalTexture;
 Texture2D g_SpecularTexture;
@@ -107,12 +109,12 @@ float3 Lambert(float diffuseReflectance, float3 diffuseColor)
 float3 Phong(float3 specularReflectance, float phongExponent, float3 lightDirection, float3 viewDirection, float3 normal)
 {
     float3 reflectedLightDirection = reflect(lightDirection, normal);
-    float negatedDot = -dot(reflectedLightDirection, viewDirection);
+    float dotLightViewDirection = dot(reflectedLightDirection, -viewDirection);
     
-    if (negatedDot <= 0.0f)
+    if (dotLightViewDirection <= 0.0f)
         return float3(0.0f, 0.0f, 0.0f);
 
-    return specularReflectance * pow(negatedDot, phongExponent);
+    return specularReflectance * pow(dotLightViewDirection, phongExponent);
 }
 
 float3 MyPixelShader(PixelShaderInput input) : SV_TARGET
@@ -122,7 +124,12 @@ float3 MyPixelShader(PixelShaderInput input) : SV_TARGET
     float3 specularReflectance = g_SpecularTexture.Sample(g_ActiveSamplerState, UV).xyz;
     float phongExponent = g_Shininess * g_GlossTexture.Sample(g_ActiveSamplerState, UV);
     float3 viewDirection = normalize(input.worldPosition.xyz - g_CameraOrigin);
-    float3 normal = GetSampledNormal(UV, input.normal, input.tangent, g_NormalTexture);
+    
+    float3 normal;
+    if (g_UseNormalTexture)
+       normal = GetSampledNormal(UV, input.normal, input.tangent, g_NormalTexture);
+    else
+        normal = input.normal;
     
     float3 specular = Phong(specularReflectance, phongExponent, g_LightDirection, viewDirection, normal);
 

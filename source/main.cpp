@@ -44,8 +44,20 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* args[])
 			case SDL_KEYUP:
 				switch (event.key.keysym.scancode)
 				{
-				case SDL_SCANCODE_F2:
+				case SDL_SCANCODE_F4:
 					scene.ToggleFilteringType();
+					break;
+
+				case SDL_SCANCODE_F5:
+					scene.ToggleRotation();
+					break;
+
+				case SDL_SCANCODE_F6:
+					scene.ToggleNormalMapping();
+					break;
+
+				case SDL_SCANCODE_F7:
+					scene.ToggleFireRendering();
 					break;
 				}
 				break;

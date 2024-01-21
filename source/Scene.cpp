@@ -5,6 +5,10 @@
 
 #pragma region Constructors/Destructor
 Scene::Scene(ID3D11Device* const pDevice) :
+	m_RotateMeshes{ true },
+	m_NotRotatingElapsedSeconds{},
+	m_RenderFire{ true },
+
 	m_Camera{ {0.0f, 0.0f, -50.0f} },
 
 	m_VehicleDiffuse{ pDevice, "Resources/Vehicle/VehicleDiffuse.png" },
@@ -39,19 +43,53 @@ void Scene::Update(const Timer& timer)
 
 	m_VehicleEffect.SetCameraOrigin(m_Camera.GetOrigin());
 
-	for (Mesh& mesh : m_vMeshes)
-		mesh.SetRotorY(TO_RADIANS * 45.0f * timer.GetTotal());
+	if (m_RotateMeshes)
+		for (Mesh& mesh : m_vMeshes)
+			mesh.SetRotorY(TO_RADIANS * 45.0f * (timer.GetTotal() - m_NotRotatingElapsedSeconds));
+	else
+		m_NotRotatingElapsedSeconds += timer.GetElapsed();
 }
 
 void Scene::Render(ID3D11DeviceContext* const pDeviceContext) const
 {
-	for (const Mesh& mesh : m_vMeshes)
-		mesh.Render(pDeviceContext, m_Camera.GetViewProjectionMatrix());
+	m_vMeshes.front().Render(pDeviceContext, m_Camera.GetViewProjectionMatrix());
+
+	if (m_RenderFire)
+		m_vMeshes.back().Render(pDeviceContext, m_Camera.GetViewProjectionMatrix());;
 }
 
 void Scene::ToggleFilteringType()
 {
 	m_VehicleEffect.ToggleFilteringType();
+}
+
+void Scene::ToggleRotation()
+{
+	m_RotateMeshes = !m_RotateMeshes;
+
+	system("CLS");
+	std::cout
+		<< CONTROLS
+		<< "--------\n"
+		<< "ROTATE: " << std::boolalpha << m_RotateMeshes << "\n"
+		<< "--------\n";
+}
+
+void Scene::ToggleNormalMapping()
+{
+	m_VehicleEffect.ToggleUseNormalTexture();
+}
+
+void Scene::ToggleFireRendering()
+{
+	m_RenderFire = !m_RenderFire;
+
+	system("CLS");
+	std::cout
+		<< CONTROLS
+		<< "--------\n"
+		<< "RENDER FIRE: " << std::boolalpha << m_RenderFire << "\n"
+		<< "--------\n";
 }
 
 Camera& Scene::GetCamera()

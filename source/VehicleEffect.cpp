@@ -82,4 +82,18 @@ void VehicleEffect::SetFilteringType(FilteringType filteringType)
 		<< "FILTERING TYPE: " << filteringTypeName << "\n"
 		<< "--------\n";
 }
+
+void VehicleEffect::ToggleUseNormalTexture()
+{
+	bool useNormalTexture;
+	m_pEffect->GetVariableByName("g_UseNormalTexture")->AsScalar()->GetBool(&useNormalTexture);
+	m_pEffect->GetVariableByName("g_UseNormalTexture")->AsScalar()->SetBool(!useNormalTexture);
+
+	system("CLS");
+	std::cout
+		<< CONTROLS
+		<< "--------\n"
+		<< "USE NORMAL TEXTURE: " << std::boolalpha << !useNormalTexture << "\n"
+		<< "--------\n";
+}
 #pragma endregion PublicMethods
