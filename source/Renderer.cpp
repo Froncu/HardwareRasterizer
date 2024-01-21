@@ -1,15 +1,41 @@
 #include "pch.h"
 #include "Renderer.h"
 
-#pragma region Constructors/Destructors
-Renderer::Renderer(SDL_Window* pWindow) :
-	m_pWindow{ pWindow },
-	m_IsInitialized{ SUCCEEDED(InitializeDirectX()) },
+#include "Scene.h"
 
-	m_Mesh{ m_pDevice, "Resources/vehicle.obj" }
+#include <cassert>
+
+#pragma region Constructors/Destructors
+Renderer::Renderer(SDL_Window* const pWindow)
 {
-	if (!m_IsInitialized)
-		std::cout << "DirectX initialization failed!\n";
+	HRESULT result;
+
+	result = CreateDevice(m_pDevice, m_pDeviceContext);
+	assert(SUCCEEDED(result));
+
+	IDXGIFactory1* pDXGIFactory;
+	result = CreateFactory(pDXGIFactory);
+	assert(SUCCEEDED(result));
+
+	result = CreateSwapChain(pWindow, pDXGIFactory, m_pDevice, m_pSwapChain);
+	pDXGIFactory->Release();
+	assert(SUCCEEDED(result));
+
+	result = CreateDepthStencilBuffer(m_pDevice, m_pDepthStencilBuffer);
+	assert(SUCCEEDED(result));
+
+	result = CreateDepthStencilView(m_pDevice, m_pDepthStencilBuffer, m_pDepthStencilView);
+	assert(SUCCEEDED(result));
+
+	result = CreateRenderTargetBuffer(m_pSwapChain, m_pRenderTargetBuffer);
+	assert(SUCCEEDED(result));
+
+	result = CreateRenderTargetView(m_pDevice, m_pRenderTargetBuffer, m_pRenderTargetView);
+	assert(SUCCEEDED(result));
+
+	BindAsActiveBuffers(m_pDeviceContext, m_pDepthStencilView, m_pRenderTargetView);
+
+	SetViewPort(m_pDeviceContext);
 }
 
 Renderer::~Renderer()
@@ -35,81 +61,31 @@ Renderer::~Renderer()
 
 
 #pragma region PublicMethods
-void Renderer::Update(const Timer& timer)
+void Renderer::Render(const Scene& scene)
 {
-	m_Mesh.SetRotorY(45.0f * TO_RADIANS * timer.GetTotal());
-}
+	ClearBuffers(m_pDeviceContext);
 
-void Renderer::Render(const Camera& camera)
-{
-	if (!m_IsInitialized)
-		return;
-
-	ClearBuffers();
-
-	m_Mesh.Render(m_pDeviceContext, camera);
+	scene.Render(m_pDeviceContext);
 
 	m_pSwapChain->Present(0, DXGI_PRESENT_ALLOW_TEARING);
 
 	BindAsActiveBuffers(m_pDeviceContext, m_pDepthStencilView, m_pRenderTargetView);
 }
 
-void Renderer::ToggleFliteringType()
+ID3D11Device* const Renderer::GetDevice() const
 {
-	m_Mesh.ToggleFilteringType();
+	return m_pDevice;
 }
 #pragma endregion PublicMethods
 
 
 
 #pragma region PrivateMethods
-void Renderer::ClearBuffers(const ColorRGB& color) const
+void Renderer::ClearBuffers(ID3D11DeviceContext* const pDeviceContext, const ColorRGB& color) const
 {
 	const FLOAT aColor[]{ static_cast<FLOAT>(color.red), static_cast<FLOAT>(color.green), static_cast<FLOAT>(color.blue), static_cast<FLOAT>(1.0f) };
-	m_pDeviceContext->ClearRenderTargetView(m_pRenderTargetView, aColor);
-	m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-}
-
-HRESULT Renderer::InitializeDirectX()
-{
-	HRESULT result;
-
-	result = CreateDevice(m_pDevice, m_pDeviceContext);
-	if (FAILED(result))
-		return result;
-
-	IDXGIFactory1* pDXGIFactory;
-	result = CreateFactory(pDXGIFactory);
-	if (FAILED(result))
-		return result;
-
-	result = CreateSwapChain(m_pWindow, pDXGIFactory, m_pDevice, m_pSwapChain);
-	if (FAILED(result))
-		return result;
-
-	pDXGIFactory->Release();
-
-	result = CreateDepthStencilBuffer(m_pDevice, m_pDepthStencilBuffer);
-	if (FAILED(result))
-		return result;
-
-	result = CreateDepthStencilView(m_pDevice, m_pDepthStencilBuffer, m_pDepthStencilView);
-	if (FAILED(result))
-		return result;
-
-	result = CreateRenderTargetBuffer(m_pSwapChain, m_pRenderTargetBuffer);
-	if (FAILED(result))
-		return result;
-
-	result = CreateRenderTargetView(m_pDevice, m_pRenderTargetBuffer, m_pRenderTargetView);
-	if (FAILED(result))
-		return result;
-
-	BindAsActiveBuffers(m_pDeviceContext, m_pDepthStencilView, m_pRenderTargetView);
-
-	SetViewPort(m_pDeviceContext);
-
-	return result;
+	pDeviceContext->ClearRenderTargetView(m_pRenderTargetView, aColor);
+	pDeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
 HRESULT Renderer::CreateDevice(ID3D11Device*& pDevice, ID3D11DeviceContext*& pDeviceContext) const

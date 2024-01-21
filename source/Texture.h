@@ -2,11 +2,6 @@
 
 #include <string>
 
-#include "SDL_stdinc.h"
-
-struct ColorRGB;
-struct Vector2;
-struct SDL_Surface;
 class Texture final
 {
 public:

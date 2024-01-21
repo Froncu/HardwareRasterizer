@@ -2,38 +2,36 @@
 
 #include "vld.h"
 #include "Renderer.h"
-#include "Camera.h"
+#include "Scene.h"
+#include "Timer.h"
 
 #include <string>
 
+#pragma region EntryPoint
 int main([[maybe_unused]] int argc, [[maybe_unused]] char* args[])
 {
 	SDL_Init(SDL_INIT_VIDEO);
 
 	const std::string windowTitle{ "Rasterizer - Fratczak Jakub (2DAE10)" };
-
-	SDL_Window* pWindow = SDL_CreateWindow(
+	SDL_Window* const pWindow
+	{
+		SDL_CreateWindow(
 		windowTitle.c_str(),
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
-		WINDOW_WIDTH, WINDOW_HEIGHT, NULL);
-
-	if (!pWindow)
-		return 1;
+		WINDOW_WIDTH, WINDOW_HEIGHT, NULL)
+	};
 
 	SDL_SetRelativeMouseMode(SDL_bool(true));
 
-	Renderer renderer{ pWindow };
-	Camera camera{ Vector3(0.0f, 0.0f, -50.0f) };
-
 	std::cout << CONTROLS;
+
+	Renderer renderer{ pWindow };
+	Scene scene{ renderer.GetDevice() };
 
 	Timer timer{};
 	timer.Start();
-
-	bool isLooping{ true };
-	float printTimer{};
-	while (isLooping)
+	while (true)
 	{
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
@@ -41,29 +39,28 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* args[])
 			switch (event.type)
 			{
 			case SDL_QUIT:
-				isLooping = false;
-				break;
+				return 0;
 
 			case SDL_KEYUP:
 				switch (event.key.keysym.scancode)
 				{
 				case SDL_SCANCODE_F2:
-					renderer.ToggleFliteringType();
+					scene.ToggleFilteringType();
 					break;
 				}
 				break;
 
 			case SDL_MOUSEWHEEL:
-				camera.IncrementFieldOfViewAngle(-event.wheel.preciseY / 20.0f);
+				scene.GetCamera().IncrementFieldOfViewAngle(-event.wheel.preciseY / 20.0f);
 				break;
 			}
 		}
 
-		camera.Update(timer);
-		renderer.Update(timer);
-		renderer.Render(camera);
-
 		timer.Update();
+		scene.Update(timer);
+		renderer.Render(scene);
+
+		static float printTimer{};
 		printTimer += timer.GetElapsed();
 		if (printTimer >= 1.0f)
 		{
@@ -71,9 +68,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* args[])
 			SDL_SetWindowTitle(pWindow, (windowTitle + " - dFPS: " + std::to_string(timer.GetdFPS())).c_str());
 		}
 	}
-	timer.Stop();
 
 	SDL_DestroyWindow(pWindow);
 	SDL_Quit();
+
 	return 0;
 }
+#pragma endregion EntryPoint

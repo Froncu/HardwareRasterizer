@@ -1,27 +1,28 @@
 #pragma once
 
 #include "Mathematics.hpp"
-#include "Timer.h"
-#include "Matrix.h"
 #include "Vector3.h"
+#include "Matrix.h"
+
+class Timer;
 
 class Camera final
 {
 public:
-	~Camera() = default;
+	Camera(const Vector3& origin = Vector3(0.0f, 0.0f, 0.0f), float fieldOfViewAngle = TO_RADIANS * 45.0f);
 
 	Camera(const Camera&) = delete;
 	Camera(Camera&&) noexcept = delete;
 	Camera& operator=(const Camera&) = delete;
 	Camera& operator=(Camera&&) noexcept = delete;
 
-	Camera(const Vector3& origin = Vector3(0.0f, 0.0f, 0.0f), float fieldOfViewAngle = TO_RADIANS * 45.0f);
+	~Camera() = default;
 
 	void Update(const Timer& timer);
 
-	const Matrix& GetInversedViewMatrix() const;
+	const Matrix& GetViewMatrix() const;
 	const Matrix& GetProjectionMatrix() const;
-	const Matrix& GetCameraMatrix() const;
+	const Matrix& GetViewProjectionMatrix() const;
 	const Vector3& GetOrigin() const;
 	float GetFieldOfViewValue() const;
 
@@ -29,31 +30,23 @@ public:
 	void SetFieldOfViewAngle(float angle);
 	void IncrementFieldOfViewAngle(float angleIncrementer);
 
-	static const float
-		NEAR_PLANE,
-		FAR_PLANE,
-		DELTA_NEAR_FAR_PLANE;
-
 private:
-	void UpdateInversedViewMatrix();
+	void UpdateViewMatrix();
 	void UpdateProjectionMatrix();
-	void UpdateCameraMatrix();
+	void UpdateViewProjectionMatrix();
 
-	Vector3
-		m_Origin,
-		m_ForwardDirection,
-		m_RightDirection,
-		m_UpDirection;
+	Vector3 m_Origin;
+	Vector3 m_ForwardDirection;
+	Vector3 m_RightDirection;
+	Vector3 m_UpDirection;
 
-	float
-		m_FieldOfViewAngle,
-		m_FieldOfViewValue,
+	float m_FieldOfViewAngle;
+	float m_FieldOfViewValue;
 
-		m_TotalPitch,
-		m_TotalYaw;
+	float m_TotalPitch;
+	float m_TotalYaw;
 
-	Matrix
-		m_InversedViewMatrix,
-		m_ProjectionMatrix,
-		m_CameraMatrix;
+	Matrix m_ViewMatrix;
+	Matrix m_ProjectionMatrix;
+	Matrix m_ViewProjectionMatrix;
 };

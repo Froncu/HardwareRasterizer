@@ -1,10 +1,87 @@
 #include "pch.h"
 #include "Mesh.h"
 
+#include "DefaultEffect.h"
+
 #include <cassert>
 #include <fstream>
 
 #pragma region Constructors/Destructor
+Mesh::Mesh(DefaultEffect* const pEffect, ID3D11Device* const pDevice, const std::vector<Vertex>& vVertices, const std::vector<uint32_t> vIndices) :
+	m_pEffect{ pEffect },
+
+	m_Translator{ IDENTITY },
+	m_Rotor{ IDENTITY },
+	m_Scalar{ IDENTITY },
+	m_WorldMatrix{ m_Scalar * m_Rotor * m_Translator }
+{
+	assert(SUCCEEDED(CreateInputLayout(m_pEffect->GetDefaultTechnique(), pDevice, m_pInputLayout)));
+
+	assert(SUCCEEDED(CreateVertexBuffer(vVertices, pDevice, m_pVertexBuffer)));
+
+	assert(SUCCEEDED(CreateIndexBuffer(vIndices, pDevice, m_pIndexBuffer, m_NumberOfIndices)));
+}
+
+Mesh::Mesh(DefaultEffect* const pEffect, ID3D11Device* const pDevice, const std::string& OBJFilePath, bool flipAxisAndWinding) :
+	m_pEffect{ pEffect },
+
+	m_Translator{ IDENTITY },
+	m_Rotor{ IDENTITY },
+	m_Scalar{ IDENTITY },
+	m_WorldMatrix{ m_Scalar * m_Rotor * m_Translator }
+{
+	std::vector<Vertex> vVertices{};
+	std::vector<uint32_t> vIndices{};
+	ParseOBJ(OBJFilePath, flipAxisAndWinding, vVertices, vIndices);
+
+	assert(SUCCEEDED(CreateInputLayout(m_pEffect->GetDefaultTechnique(), pDevice, m_pInputLayout)));
+
+	assert(SUCCEEDED(CreateVertexBuffer(vVertices, pDevice, m_pVertexBuffer)));
+
+	assert(SUCCEEDED(CreateIndexBuffer(vIndices, pDevice, m_pIndexBuffer, m_NumberOfIndices)));
+}
+
+Mesh::Mesh(const Mesh& other) :
+	m_pEffect{ other.m_pEffect },
+
+	m_pInputLayout{ other.m_pInputLayout },
+	m_pVertexBuffer{ other.m_pVertexBuffer },
+	m_pIndexBuffer{ other.m_pIndexBuffer },
+
+	m_NumberOfIndices{ other.m_NumberOfIndices },
+
+	m_Translator{ other.m_Translator },
+	m_Rotor{ other.m_Rotor },
+	m_Scalar{ other.m_Scalar },
+	m_WorldMatrix{ other.m_WorldMatrix }
+{
+	m_pInputLayout->AddRef();
+	m_pVertexBuffer->AddRef();
+	m_pIndexBuffer->AddRef();
+}
+
+Mesh& Mesh::operator=(const Mesh& other)
+{
+	m_pEffect = other.m_pEffect;
+
+	m_pInputLayout = other.m_pInputLayout;
+	m_pVertexBuffer = other.m_pVertexBuffer;
+	m_pIndexBuffer = other.m_pIndexBuffer;
+
+	m_NumberOfIndices = other.m_NumberOfIndices;
+
+	m_Translator = other.m_Translator;
+	m_Rotor = other.m_Rotor;
+	m_Scalar = other.m_Scalar;
+	m_WorldMatrix = other.m_WorldMatrix;
+
+	m_pInputLayout->AddRef();
+	m_pVertexBuffer->AddRef();
+	m_pIndexBuffer->AddRef();
+
+	return *this;
+}
+
 Mesh::~Mesh()
 {
 	m_pIndexBuffer->Release();
@@ -13,72 +90,27 @@ Mesh::~Mesh()
 
 	m_pInputLayout->Release();
 }
-
-Mesh::Mesh(ID3D11Device* const pDevice, const std::vector<Vertex>& vVertices, const std::vector<uint32_t> vIndices) :
-	m_Effect{ pDevice },
-
-	m_Translator{ IDENTITY },
-	m_Rotor{ IDENTITY },
-	m_Scalar{ IDENTITY },
-	m_WorldMatrix{ IDENTITY }
-{
-	assert(SUCCEEDED(CreateInputLayout(m_Effect->GetTechniqueByIndex(0), pDevice, m_pInputLayout)));
-
-	assert(SUCCEEDED(CreateVertexBuffer(vVertices, pDevice, m_pVertexBuffer)));
-
-	assert(SUCCEEDED(CreateIndexBuffer(vIndices, pDevice, m_pIndexBuffer, m_NumberOfIndices)));
-
-	m_Effect.SetDiffuseTexture(Texture(pDevice, "Resources/uv_grid_2.png"));
-
-	m_Effect.SetWorldMatrix(m_WorldMatrix);
-}
-
-Mesh::Mesh(ID3D11Device* const pDevice, const std::string& OBJFilePath, bool flipAxisAndWinding) :
-	m_Effect{ pDevice },
-
-	m_Translator{ IDENTITY },
-	m_Rotor{ IDENTITY },
-	m_Scalar{ IDENTITY },
-	m_WorldMatrix{ IDENTITY }
-{
-	std::vector<Vertex> vVertices{};
-	std::vector<uint32_t> vIndices{};
-	ParseOBJ(OBJFilePath, flipAxisAndWinding, vVertices, vIndices);
-
-	assert(SUCCEEDED(CreateInputLayout(m_Effect->GetTechniqueByIndex(0), pDevice, m_pInputLayout)));
-
-	assert(SUCCEEDED(CreateVertexBuffer(vVertices, pDevice, m_pVertexBuffer)));
-
-	assert(SUCCEEDED(CreateIndexBuffer(vIndices, pDevice, m_pIndexBuffer, m_NumberOfIndices)));
-
-	m_Effect.SetWorldMatrix(m_WorldMatrix);
-
-	m_Effect.SetDiffuseTexture(Texture(pDevice, "Resources/vehicle_diffuse.png"));
-	m_Effect.SetNormalTexture(Texture(pDevice, "Resources/vehicle_normal.png"));
-	m_Effect.SetSpecularTexture(Texture(pDevice, "Resources/vehicle_specular.png"));
-	m_Effect.SetGlossinessTexture(Texture(pDevice, "Resources/vehicle_gloss.png"));
-}
 #pragma endregion Constructors/Destructor
 
 
 
 #pragma region PublicMethods
-void Mesh::Render(ID3D11DeviceContext* const pDeviceContext, const Camera& camera) const
+void Mesh::Render(ID3D11DeviceContext* const pDeviceContext, const Matrix& viewProjectionMatrix) const
 {
-	m_Effect.SetViewProjectionMatrix(camera.GetCameraMatrix());
-	m_Effect.SetCameraOrigin(camera.GetOrigin());
+	m_pEffect->SetWorldMatrix(m_WorldMatrix);	
+	m_pEffect->SetViewProjectionMatrix(viewProjectionMatrix);
 
 	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 	pDeviceContext->IASetInputLayout(m_pInputLayout);
 
-	constexpr UINT
-		stride{ sizeof(Vertex) },
-		offset{};
-
+	constexpr UINT stride{ sizeof(Vertex) };
+	constexpr UINT offset{};
 	pDeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
+
 	pDeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
-	ID3DX11EffectTechnique* const pEffectTechnique{ m_Effect->GetTechniqueByIndex(0) };
+	ID3DX11EffectTechnique* const pEffectTechnique{ m_pEffect->GetDefaultTechnique() };
 
 	D3DX11_TECHNIQUE_DESC techniqueDescription;
 	pEffectTechnique->GetDesc(&techniqueDescription);
@@ -90,112 +122,40 @@ void Mesh::Render(ID3D11DeviceContext* const pDeviceContext, const Camera& camer
 	}
 }
 
-void Mesh::ToggleFilteringType()
-{
-	const uint32_t
-		currentType{ static_cast<uint32_t>(m_FilteringType) },
-		typesCount{ static_cast<uint32_t>(FilteringType::COUNT) },
-		nextType{ (currentType + 1) % typesCount };
-
-	m_FilteringType = static_cast<FilteringType>(nextType);
-
-	std::string variableName, filteringType;
-	switch (m_FilteringType)
-	{
-	case Mesh::FilteringType::point:
-		variableName = "g_PointSamplerState";
-		filteringType = "Point";
-		break;
-
-	case Mesh::FilteringType::linear:
-		variableName = "g_LinearSamplerState";
-		filteringType = "Linear";
-		break;
-
-	case Mesh::FilteringType::anisotropic:
-		variableName = "g_AnisotropicSamplerState";
-		filteringType = "Anisotropic";
-		break;
-	}
-
-	ID3D11SamplerState* pSamplerState;
-	m_Effect->GetVariableByName(variableName.c_str())->AsSampler()->GetSampler(NULL, &pSamplerState);
-	m_Effect->GetVariableByName("g_ActiveSamplerState")->AsSampler()->SetSampler(NULL, pSamplerState);
-	pSamplerState->Release();
-
-	system("CLS");
-	std::cout
-		<< CONTROLS
-		<< "--------\n"
-		<< "FILTERING TYPE: " << filteringType << "\n"
-		<< "--------\n";
-}
-
 void Mesh::SetTranslator(const Vector3& translator)
 {
 	m_Translator = Matrix::CreateTranslator(translator);
-	m_WorldMatrix = m_Scalar * m_Rotor * m_Translator;
 
-	m_Effect.SetWorldMatrix(m_WorldMatrix);
+	m_WorldMatrix = m_Scalar * m_Rotor * m_Translator;
 }
 
 void Mesh::SetRotorY(float yaw)
 {
 	m_Rotor = Matrix::CreateRotorY(yaw);
-	m_WorldMatrix = m_Scalar * m_Rotor * m_Translator;
 
-	m_Effect.SetWorldMatrix(m_WorldMatrix);
+	m_WorldMatrix = m_Scalar * m_Rotor * m_Translator;
 }
 
 void Mesh::SetScalar(float scalar)
 {
 	m_Scalar = Matrix::CreateScalar(scalar);
-	m_WorldMatrix = m_Scalar * m_Rotor * m_Translator;
 
-	m_Effect.SetWorldMatrix(m_WorldMatrix);
+	m_WorldMatrix = m_Scalar * m_Rotor * m_Translator;
 }
 #pragma endregion PublicMethods
 
 
 
 #pragma region PrivateMethods
-HRESULT Mesh::CreateInputLayout(ID3DX11EffectTechnique* const pEffectTechnique, ID3D11Device* const pDevice, ID3D11InputLayout*& pInputLayout)
+HRESULT Mesh::CreateInputLayout(ID3DX11EffectTechnique* const pEffectTechnique, ID3D11Device* const pDevice, ID3D11InputLayout*& pInputLayout) const
 {
-	static constexpr uint32_t NUMBER_OF_ELEMENTS{ 5 };
-	D3D11_INPUT_ELEMENT_DESC aVertexDescription[NUMBER_OF_ELEMENTS]{};
-
-	aVertexDescription[0].SemanticName = "SV_Position";
-	aVertexDescription[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	aVertexDescription[0].AlignedByteOffset = 0;
-	aVertexDescription[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-
-	aVertexDescription[1].SemanticName = "COLOR";
-	aVertexDescription[1].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	aVertexDescription[1].AlignedByteOffset = 12;
-	aVertexDescription[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-
-	aVertexDescription[2].SemanticName = "TEXCOORD";
-	aVertexDescription[2].Format = DXGI_FORMAT_R32G32_FLOAT;
-	aVertexDescription[2].AlignedByteOffset = 24;
-	aVertexDescription[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-
-	aVertexDescription[3].SemanticName = "NORMAL";
-	aVertexDescription[3].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	aVertexDescription[3].AlignedByteOffset = 32;
-	aVertexDescription[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-
-	aVertexDescription[4].SemanticName = "TANGENT";
-	aVertexDescription[4].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	aVertexDescription[4].AlignedByteOffset = 44;
-	aVertexDescription[4].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-
 	D3DX11_PASS_DESC passDescription;
-	pEffectTechnique->GetPassByIndex(0)->GetDesc(&passDescription);
+	pEffectTechnique->GetPassByName("DefaultPass")->GetDesc(&passDescription);
 
 	return pDevice->CreateInputLayout
 	(
-		aVertexDescription,
-		NUMBER_OF_ELEMENTS,
+		Vertex::GetLayout().data(),
+		static_cast<UINT>(Vertex::GetLayout().size()),
 		passDescription.pIAInputSignature,
 		passDescription.IAInputSignatureSize,
 		&pInputLayout
@@ -328,32 +288,27 @@ bool Mesh::ParseOBJ(const std::string& path, bool flipAxisAndWinding, std::vecto
 	// Cheap Tangent Calculation
 	for (size_t index{}; index < vIndices.size(); index += 3)
 	{
-		const size_t
-			index0{ vIndices[index] },
-			index1{ vIndices[index + 1] },
-			index2{ vIndices[index + 2] };
+		const size_t index0{ vIndices[index] };
+		const size_t index1{ vIndices[index + 1] };
+		const size_t index2{ vIndices[index + 2] };
 
-		const Vector2
-			& v0UV{ vVertices[index0].UV },
-			& v1UV{ vVertices[index1].UV },
-			& v2UV{ vVertices[index2].UV };
+		const Vector2& v0UV{ vVertices[index0].UV };
+		const Vector2& v1UV{ vVertices[index1].UV };
+		const Vector2& v2UV{ vVertices[index2].UV };
 
-		const Vector2
-			deltaX{ v1UV.x - v0UV.x, v2UV.x - v0UV.x },
-			deltaY{ v1UV.y - v0UV.y, v2UV.y - v0UV.y };
+		const Vector2 deltaX{ v1UV.x - v0UV.x, v2UV.x - v0UV.x };
+		const Vector2 deltaY{ v1UV.y - v0UV.y, v2UV.y - v0UV.y };
 
-		const float
-			cross{ Vector2::Cross(deltaX, deltaY) },
-			inversedCross{ cross ? (1.0f / cross) : 0.0f };
+		const float cross{ Vector2::Cross(deltaX, deltaY) };
+		const float inversedCross{ cross ? (1.0f / cross) : 0.0f };
 
-		const Vector3
-			& v0Position{ vVertices[index0].position },
-			& v1Position{ vVertices[index1].position },
-			& v2Position{ vVertices[index2].position },
+		const Vector3& v0Position{ vVertices[index0].position };
+		const Vector3& v1Position{ vVertices[index1].position };
+		const Vector3& v2Position{ vVertices[index2].position };
 
-			edge0{ v1Position - v0Position },
-			edge1{ v2Position - v0Position },
-			tangent{ (edge0 * deltaY.y - edge1 * deltaY.x) * inversedCross };
+		const Vector3 edge0{ v1Position - v0Position };
+		const Vector3 edge1{ v2Position - v0Position };
+		const Vector3 tangent{ (edge0 * deltaY.y - edge1 * deltaY.x) * inversedCross };
 
 		vVertices[index0].tangent += tangent;
 		vVertices[index1].tangent += tangent;

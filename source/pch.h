@@ -19,7 +19,6 @@
 #include <d3dcompiler.h>
 #include <d3dx11effect.h>
 
-// Framework Headers
+// Project Headers
 #include "Constants.hpp"
 #include "Mathematics.hpp"
-#include "Timer.h"

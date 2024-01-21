@@ -2,6 +2,7 @@
 
 struct Vector3;
 struct Vector4;
+
 struct Vector2
 {
 public:

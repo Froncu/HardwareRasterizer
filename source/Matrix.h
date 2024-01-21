@@ -2,22 +2,21 @@
 
 #include "Vector4.h"
 
-struct Vector3;
 class Matrix final
 {
 public:
-	~Matrix() = default;
+	Matrix() = default;
+	constexpr Matrix(const Vector4& xAxis, const Vector4& yAxis, const Vector4& zAxis, const Vector4& translator) :
+		m_Data{ xAxis, yAxis, zAxis, translator }
+	{
+	}
 
 	Matrix(const Matrix&) = default;
 	Matrix(Matrix&&) noexcept = default;
 	Matrix& operator=(const Matrix&) = default;
 	Matrix& operator=(Matrix&&) noexcept = default;
 
-	Matrix() = default;
-	constexpr Matrix(const Vector4& xAxis, const Vector4& yAxis, const Vector4& zAxis, const Vector4& translator) :
-		m_Data{ xAxis, yAxis, zAxis, translator }
-	{
-	}
+	~Matrix() = default;
 
 	Matrix operator*(const Matrix& matrix) const;
 
@@ -41,9 +40,6 @@ public:
 
 	static Matrix CreateScalar(float scalarX, float scalarY, float scalarZ);
 	static Matrix CreateScalar(float scalar);
-
-	static Matrix CreateLookAtLH(const Vector3& origin, const Vector3& forward, const Vector3& up);
-	static Matrix CreatePerspectiveFovLH(float fovy, float aspect, float zn, float zf);
 
 	Vector3 TransformVector(float x, float y, float z) const;
 	Vector3 TransformVector(const Vector3& vector) const;

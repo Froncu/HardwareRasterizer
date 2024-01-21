@@ -77,6 +77,16 @@ ColorRGB operator*(float scalar, const ColorRGB& color)
 
 
 #pragma region PublicMethods
+ColorRGB& ColorRGB::MaxToOne()
+{
+	*this = GetMaxToOne();
+	return *this;
+}
+#pragma endregion PublicMethods
+
+
+
+#pragma region Getters
 ColorRGB ColorRGB::GetMaxToOne() const
 {
 	const float maxValue{ std::max(red, std::max(green, blue)) };
@@ -85,10 +95,4 @@ ColorRGB ColorRGB::GetMaxToOne() const
 
 	return *this;
 }
-
-ColorRGB& ColorRGB::MaxToOne()
-{
-	*this = GetMaxToOne();
-	return *this;
-}
-#pragma endregion PublicMethods
+#pragma endregion Getters

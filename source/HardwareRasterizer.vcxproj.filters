@@ -1,6 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="Base Classes">
+      <UniqueIdentifier>{6e64f74e-2f96-496b-a297-17db0dd880c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base Classes\Effect">
+      <UniqueIdentifier>{20298ac8-b803-4a9d-9acf-f26efe379b4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base Classes\DefaultEffect">
+      <UniqueIdentifier>{2b6f7f81-aa02-440e-9b73-ee392e4dec28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Camera">
+      <UniqueIdentifier>{06bdd1fb-92e7-4cb3-a347-0852a5164c2c}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Mathematics">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
@@ -20,36 +32,41 @@
     <Filter Include="Mathematics\Vectors\Vector2">
       <UniqueIdentifier>{7ecc877c-138c-448b-b81c-7b620e46928d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Renderer">
+      <UniqueIdentifier>{049fd5df-16cc-48e6-9234-f5b230d9d0e6}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Miscellaneous">
       <UniqueIdentifier>{72056cb6-72a2-42b7-b05e-376f1ddd957e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Miscellaneous\Timer">
       <UniqueIdentifier>{c41fb242-b27e-4e47-9523-b112760e96a3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Miscellaneous\Renderer">
-      <UniqueIdentifier>{049fd5df-16cc-48e6-9234-f5b230d9d0e6}</UniqueIdentifier>
+    <Filter Include="Miscellaneous\Texture">
+      <UniqueIdentifier>{dd8b2eeb-ca84-4185-8758-493f2c8d82f8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Miscellaneous\ColorRGB">
       <UniqueIdentifier>{719984a1-0596-454b-ba53-259f980a2012}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Miscellaneous\Effect">
-      <UniqueIdentifier>{eacfb646-807d-4196-85e7-e3087cbf3618}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Objects">
-      <UniqueIdentifier>{654e9fb6-7789-491b-bc05-2bbe427caf8b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Objects\Mesh">
+    <Filter Include="Miscellaneous\Mesh">
       <UniqueIdentifier>{95420dff-6c5a-4155-8065-5de101a141c4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Miscellaneous\Camera">
-      <UniqueIdentifier>{06bdd1fb-92e7-4cb3-a347-0852a5164c2c}</UniqueIdentifier>
+    <Filter Include="Other">
+      <UniqueIdentifier>{c85f1b92-5546-4145-9e86-4876bf7c3eea}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Objects\Texture">
-      <UniqueIdentifier>{dd8b2eeb-ca84-4185-8758-493f2c8d82f8}</UniqueIdentifier>
+    <Filter Include="Effects">
+      <UniqueIdentifier>{eacfb646-807d-4196-85e7-e3087cbf3618}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Effects\VehicleEffect">
+      <UniqueIdentifier>{bdb9457c-3a44-4508-a799-44013b81f9a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{f3204e16-2146-488b-b1bb-5a85406963c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Effects\FireEffect">
+      <UniqueIdentifier>{7b0deb0b-cd20-48fe-b5b0-8eaada2bf63d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h" />
     <ClInclude Include="Mathematics.hpp">
       <Filter>Mathematics</Filter>
     </ClInclude>
@@ -69,33 +86,46 @@
       <Filter>Miscellaneous\Timer</Filter>
     </ClInclude>
     <ClInclude Include="Renderer.h">
-      <Filter>Miscellaneous\Renderer</Filter>
+      <Filter>Renderer</Filter>
     </ClInclude>
     <ClInclude Include="ColorRGB.h">
       <Filter>Miscellaneous\ColorRGB</Filter>
     </ClInclude>
-    <ClInclude Include="Effect.h">
-      <Filter>Miscellaneous\Effect</Filter>
-    </ClInclude>
-    <ClInclude Include="Vertex.hpp">
-      <Filter>Objects</Filter>
-    </ClInclude>
     <ClInclude Include="Mesh.h">
-      <Filter>Objects\Mesh</Filter>
+      <Filter>Miscellaneous\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
-      <Filter>Miscellaneous\Camera</Filter>
+      <Filter>Camera</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
-      <Filter>Objects\Texture</Filter>
+      <Filter>Miscellaneous\Texture</Filter>
     </ClInclude>
     <ClInclude Include="Constants.hpp">
       <Filter>Miscellaneous</Filter>
     </ClInclude>
+    <ClInclude Include="VehicleEffect.h">
+      <Filter>Effects\VehicleEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect.h">
+      <Filter>Base Classes\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="DefaultEffect.h">
+      <Filter>Base Classes\DefaultEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.hpp">
+      <Filter>Miscellaneous</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="FireEffect.h">
+      <Filter>Effects\FireEffect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="pch.cpp" />
     <ClCompile Include="Matrix.cpp">
       <Filter>Mathematics\Matrix</Filter>
     </ClCompile>
@@ -112,22 +142,40 @@
       <Filter>Miscellaneous\Timer</Filter>
     </ClCompile>
     <ClCompile Include="Renderer.cpp">
-      <Filter>Miscellaneous\Renderer</Filter>
+      <Filter>Renderer</Filter>
     </ClCompile>
     <ClCompile Include="ColorRGB.cpp">
       <Filter>Miscellaneous\ColorRGB</Filter>
     </ClCompile>
-    <ClCompile Include="Effect.cpp">
-      <Filter>Miscellaneous\Effect</Filter>
-    </ClCompile>
     <ClCompile Include="Mesh.cpp">
-      <Filter>Objects\Mesh</Filter>
+      <Filter>Miscellaneous\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
-      <Filter>Miscellaneous\Camera</Filter>
+      <Filter>Camera</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
-      <Filter>Objects\Texture</Filter>
+      <Filter>Miscellaneous\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="VehicleEffect.cpp">
+      <Filter>Effects\VehicleEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect.cpp">
+      <Filter>Base Classes\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="DefaultEffect.cpp">
+      <Filter>Base Classes\DefaultEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Other</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Other</Filter>
+    </ClCompile>
+    <ClCompile Include="FireEffect.cpp">
+      <Filter>Effects\FireEffect</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

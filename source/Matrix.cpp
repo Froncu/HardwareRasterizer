@@ -75,9 +75,8 @@ Matrix Matrix::CreateTranslator(float x, float y, float z)
 
 Matrix Matrix::CreateRotorX(float pitch)
 {
-	const float
-		cosine{ cosf(pitch) },
-		sine{ sinf(pitch) };
+	const float cosine{ std::cosf(pitch) };
+	const float sine{ std::sinf(pitch) };
 
 	return
 		Matrix
@@ -91,9 +90,8 @@ Matrix Matrix::CreateRotorX(float pitch)
 
 Matrix Matrix::CreateRotorY(float yaw)
 {
-	const float
-		cosine{ cosf(yaw) },
-		sine{ sinf(yaw) };
+	const float cosine{ std::cosf(yaw) };
+	const float sine{ std::sinf(yaw) };
 
 	return
 		Matrix
@@ -107,9 +105,8 @@ Matrix Matrix::CreateRotorY(float yaw)
 
 Matrix Matrix::CreateRotorZ(float roll)
 {
-	const float
-		cosine{ cosf(roll) },
-		sine{ sinf(roll) };
+	const float cosine{ std::cosf(roll) };
+	const float sine{ std::sinf(roll) };
 
 	return
 		Matrix
@@ -145,20 +142,6 @@ Matrix Matrix::CreateScalar(float scalarX, float scalarY, float scalarZ)
 Matrix Matrix::CreateScalar(float scalar)
 {
 	return CreateScalar(scalar, scalar, scalar);
-}
-
-Matrix Matrix::CreateLookAtLH(const Vector3& origin, const Vector3& forward, const Vector3& up)
-{
-	//TODO W1
-
-	return {};
-}
-
-Matrix Matrix::CreatePerspectiveFovLH(float fovy, float aspect, float zn, float zf)
-{
-	//TODO W3
-
-	return {};
 }
 
 Vector3 Matrix::TransformVector(float x, float y, float z) const
@@ -209,23 +192,20 @@ Vector4 Matrix::TransformPoint(const Vector4& point) const
 
 Matrix Matrix::GetInversed() const
 {
-	const Vector3
-		a{ m_Data[0].GetVector3() },
-		b{ m_Data[1].GetVector3() },
-		c{ m_Data[2].GetVector3() },
-		d{ m_Data[3].GetVector3() };
+	const Vector3 a{ m_Data[0].GetVector3() };
+	const Vector3 b{ m_Data[1].GetVector3() };
+	const Vector3 c{ m_Data[2].GetVector3() };
+	const Vector3 d{ m_Data[3].GetVector3() };
 
-	const float
-		& x{ m_Data[0][3] },
-		& y{ m_Data[1][3] },
-		& z{ m_Data[2][3] },
-		& w{ m_Data[3][3] };
+	const float& x{ m_Data[0][3] };
+	const float& y{ m_Data[1][3] };
+	const float& z{ m_Data[2][3] };
+	const float& w{ m_Data[3][3] };
 
-	Vector3
-		s{ Vector3::Cross(a, b) },
-		t{ Vector3::Cross(c, d) },
-		u{ a * y - b * x },
-		v{ c * w - d * z };
+	Vector3 s{ Vector3::Cross(a, b) };
+	Vector3 t{ Vector3::Cross(c, d) };
+	Vector3 u{ a * y - b * x };
+	Vector3 v{ c * w - d * z };
 
 	const float determinant{ Vector3::Dot(s, v) + Vector3::Dot(t, u) };
 	assert((!AreEqual(determinant, 0.0f)) && "ERROR: determinant is 0, there is no INVERSE!");
@@ -236,11 +216,10 @@ Matrix Matrix::GetInversed() const
 	u *= inverseDeterminant;
 	v *= inverseDeterminant;
 
-	const Vector3
-		r0{ Vector3::Cross(b, v) + t * y },
-		r1{ Vector3::Cross(v, a) - t * x },
-		r2{ Vector3::Cross(d, u) + s * w },
-		r3{ Vector3::Cross(u, c) - s * z };
+	const Vector3 r0{ Vector3::Cross(b, v) + t * y };
+	const Vector3 r1{ Vector3::Cross(v, a) - t * x };
+	const Vector3 r2{ Vector3::Cross(d, u) + s * w };
+	const Vector3 r3{ Vector3::Cross(u, c) - s * z };
 
 	return Matrix
 	(
